@@ -32,6 +32,11 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+!.env.example
+
+# velite (generated content)
+/.velite
+/public/static
 
 # vercel
 .vercel

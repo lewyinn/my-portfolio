@@ -1,0 +1,40 @@
+---
+title: "Next.js + MDX: Building an SEO-Friendly Blog"
+description: "How the blog on this site works: MDX files in the repo, validated at build time, and rendered as static pages with full SEO metadata."
+date: "2026-11-03"
+tags: ["Next.js", "MDX", "SEO"]
+---
+
+<Callout>Draft outline. Replace each section with your own words before launch.</Callout>
+
+## Why MDX instead of a CMS
+
+[Explain your reasoning in two or three sentences: one author, content versioned in git, no extra service to run.]
+
+## How the pipeline works
+
+Every article is a single `.mdx` file with frontmatter at the top:
+
+```mdx title="content/blog/my-post.mdx"
+---
+title: "My post"
+description: "120–160 characters for the meta description."
+date: "2026-11-10"
+tags: ["nextjs"]
+---
+
+Write the article here.
+```
+
+[Describe what happens at build time: Velite validates the frontmatter, compiles the MDX, and the page is rendered as static HTML.]
+
+## SEO checklist for every post
+
+- A unique title and meta description
+- One `h1`, with headings in order
+- Descriptive image `alt` text
+- Internal links to related projects and articles
+
+## What I would add next
+
+[Your notes on next steps, for example tag pages or an RSS feed.]
