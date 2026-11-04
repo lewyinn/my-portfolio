@@ -3,23 +3,24 @@ import { cardClass, sheenClass } from "@/components/ui/card";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionLabel } from "@/components/ui/section-label";
 import { steps } from "@/lib/data";
+import { getI18n } from "@/lib/i18n-server";
 
-export function Process() {
+export async function Process() {
+  const { t } = await getI18n();
+
   return (
     <div className="flex flex-col gap-7">
       <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end md:gap-8">
         <div className="flex flex-col gap-3">
-          <SectionLabel>How I work</SectionLabel>
+          <SectionLabel>{t.process.label}</SectionLabel>
           <SectionHeading
-            lead="BUILT TO"
-            accent="FLOW"
+            lead={t.process.lead}
+            accent={t.process.accent}
             className="font-display text-[clamp(48px,5.6vw,80px)] leading-[0.9]"
           />
         </div>
         <Reveal className="max-w-[420px]">
-          <p className="text-[15px] leading-relaxed text-muted">
-            Four steps from idea to launch, with clear updates at every stage.
-          </p>
+          <p className="text-[15px] leading-relaxed text-muted">{t.process.intro}</p>
         </Reveal>
       </div>
 
@@ -30,7 +31,7 @@ export function Process() {
           className="pointer-events-none absolute top-[52px] right-[12%] left-[12%] hidden h-px bg-gradient-to-r from-transparent via-white/20 to-transparent md:block"
         />
         <Stagger as="ol" className="grid gap-3 md:grid-cols-4 md:gap-4">
-          {steps.map((step) => (
+          {steps.map((step, i) => (
             <StaggerItem
               key={step.num}
               as="li"
@@ -47,9 +48,11 @@ export function Process() {
               </div>
               <div className="relative flex flex-col gap-2">
                 <span className="font-display text-[30px] leading-none uppercase md:text-[34px]">
-                  {step.name}
+                  {t.process.steps[i]?.name}
                 </span>
-                <span className="text-sm leading-relaxed text-muted">{step.desc}</span>
+                <span className="text-sm leading-relaxed text-muted">
+                  {t.process.steps[i]?.desc}
+                </span>
               </div>
             </StaggerItem>
           ))}

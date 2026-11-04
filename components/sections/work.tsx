@@ -10,6 +10,9 @@ import { Media } from "@/components/ui/media";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionLabel } from "@/components/ui/section-label";
 import { getProjects, type Project } from "@/lib/content";
+import type { Dictionary } from "@/lib/dictionaries/en";
+import { localePath, type Locale } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 
 /** Round arrow button in a card corner that inverts and rotates on hover. */
 function CornerArrow({ className = "" }: { className?: string }) {
@@ -22,24 +25,26 @@ function CornerArrow({ className = "" }: { className?: string }) {
   );
 }
 
-function FeaturedCard({ project }: { project: Project }) {
+type CardProps = { project: Project; locale: Locale; t: Dictionary["work"] };
+
+function FeaturedCard({ project, locale, t }: CardProps) {
   return (
     <Link
-      href={`/projects/${project.slug}`}
+      href={localePath(locale, `/projects/${project.slug}`)}
       className={`${cardClass} grid rounded-3xl md:grid-cols-2`}
     >
       <div className={sheenClass} />
       <div className="relative min-h-[260px] overflow-hidden border-b border-white/[0.08] md:min-h-[440px] md:border-r md:border-b-0">
         <Media
           src={project.cover}
-          alt={`${project.title} screenshot`}
-          label={`${project.title} screenshot · 1600×1000`}
+          alt={`${project.title} ${t.screenshot}`}
+          label={`${project.title} ${t.screenshot} · 1600×1000`}
           priority
           className="absolute inset-0 transition-[scale] duration-700 ease-out group-hover:scale-[1.04]"
         />
         <span className="absolute top-4 left-4 flex items-center gap-2 rounded-full border border-white/15 bg-ink/85 px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em]">
           <span className="size-1.5 rounded-full bg-accent" />
-          FEATURED
+          {t.featured}
         </span>
       </div>
       <div className="relative flex flex-col justify-center gap-4 p-6 md:gap-5 md:p-10">
@@ -66,24 +71,24 @@ function FeaturedCard({ project }: { project: Project }) {
         </ul>
         <span className="mt-2 flex items-center gap-4 text-xs font-bold tracking-[0.16em]">
           <CornerArrow />
-          VIEW PROJECT
+          {t.viewProject}
         </span>
       </div>
     </Link>
   );
 }
 
-function ProjectCard({ project, index }: { project: Project; index: number }) {
+function ProjectCard({ project, index, locale, t }: CardProps & { index: number }) {
   return (
     <Link
-      href={`/projects/${project.slug}`}
+      href={localePath(locale, `/projects/${project.slug}`)}
       className={`${cardClass} flex h-full flex-col hover:-translate-y-1`}
     >
       <div className="relative aspect-video overflow-hidden border-b border-white/[0.08]">
         <Media
           src={project.cover}
-          alt={`${project.title} screenshot`}
-          label="Screenshot"
+          alt={`${project.title} ${t.screenshot}`}
+          label={t.screenshot}
           className="absolute inset-0 transition-[scale] duration-700 ease-out group-hover:scale-[1.04]"
         />
         <span className="absolute top-3.5 left-3.5 rounded-full border border-white/15 bg-ink/85 px-3 py-1 text-[10px] font-semibold tracking-[0.2em] uppercase">
@@ -102,7 +107,7 @@ function ProjectCard({ project, index }: { project: Project; index: number }) {
         </h3>
         <p className="relative text-sm leading-relaxed text-muted">{project.summary}</p>
         <span className="relative mt-auto flex items-center gap-2 border-t border-white/[0.08] pt-3.5 text-[11px] font-semibold tracking-[0.2em] text-muted transition-colors group-hover:text-fg">
-          VIEW CASE STUDY
+          {t.viewCase}
           <ArrowUpRightIcon strokeWidth={2.2} className="size-3" />
         </span>
       </div>
@@ -115,7 +120,9 @@ type WorkProps = {
   headingAs?: "h1" | "h2";
 };
 
-export function Work({ headingAs = "h2" }: WorkProps) {
+export async function Work({ headingAs = "h2" }: WorkProps) {
+  const { locale, t: dict } = await getI18n();
+  const t = dict.work;
   const projects = getProjects();
   const featured = projects.find((project) => project.featured) ?? projects[0];
   const others = projects.filter((project) => project !== featured);
@@ -128,26 +135,24 @@ export function Work({ headingAs = "h2" }: WorkProps) {
       <Container className="flex flex-col gap-10 py-24 md:py-32">
         <div className="flex flex-col justify-between gap-5 md:flex-row md:items-end md:gap-10">
           <div className="flex flex-col gap-3">
-            <SectionLabel>Selected projects</SectionLabel>
-            <SectionHeading as={headingAs} lead="MY" accent="WORK" />
+            <SectionLabel>{t.label}</SectionLabel>
+            <SectionHeading as={headingAs} lead={t.lead} accent={t.accent} />
           </div>
           <Reveal className="max-w-[420px] md:text-right">
-            <p className="leading-relaxed text-muted">
-              Recent websites and mobile apps — design and development, end to end.
-            </p>
+            <p className="leading-relaxed text-muted">{t.intro}</p>
           </Reveal>
         </div>
 
         {featured ? (
           <Reveal>
-            <FeaturedCard project={featured} />
+            <FeaturedCard project={featured} locale={locale} t={t} />
           </Reveal>
         ) : null}
 
         <Stagger className="grid gap-4 md:grid-cols-2" stagger={0.12}>
           {others.map((project, i) => (
             <StaggerItem key={project.slug} className="h-full">
-              <ProjectCard project={project} index={i + 2} />
+              <ProjectCard project={project} index={i + 2} locale={locale} t={t} />
             </StaggerItem>
           ))}
         </Stagger>
@@ -157,17 +162,15 @@ export function Work({ headingAs = "h2" }: WorkProps) {
         >
           <p className="relative flex items-baseline gap-3.5">
             <span className="font-display text-[52px] leading-none">[X]+</span>
-            <span className="text-sm text-muted">
-              websites and apps shipped for startups and growing brands
-            </span>
+            <span className="text-sm text-muted">{t.stat}</span>
           </p>
           <ButtonLink
-            href="/#contact"
+            href={localePath(locale, "/#contact")}
             variant="primary"
             arrow
             className="relative w-full sm:w-auto"
           >
-            Start yours
+            {t.startYours}
           </ButtonLink>
         </Reveal>
       </Container>

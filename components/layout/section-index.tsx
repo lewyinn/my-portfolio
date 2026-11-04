@@ -9,7 +9,7 @@ export type SectionIndexItem = { id: string; label: string };
  * Numbered ruler on the right edge of the homepage (desktop only). It marks the
  * section in the middle of the screen and scrolls to a section on click.
  */
-export function SectionIndex({ items }: { items: SectionIndexItem[] }) {
+export function SectionIndex({ items, label }: { items: SectionIndexItem[]; label: string }) {
   const [active, setActive] = useState(items[0]?.id);
   const lenis = useLenis();
 
@@ -38,7 +38,7 @@ export function SectionIndex({ items }: { items: SectionIndexItem[] }) {
 
   return (
     <nav
-      aria-label="Page sections"
+      aria-label={label}
       className="fixed top-1/2 right-3 z-30 hidden -translate-y-1/2 min-[1100px]:block"
     >
       <ol className="flex flex-col">

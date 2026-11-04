@@ -1,5 +1,8 @@
 import { getPosts } from "@/lib/content";
+import { en } from "@/lib/dictionaries/en";
 import { site } from "@/lib/site";
+
+// The feed is English, like the articles, and links to the English pages.
 
 function escape(value: string) {
   return value
@@ -15,8 +18,8 @@ export function GET() {
     .map(
       (post) => `    <item>
       <title>${escape(post.title)}</title>
-      <link>${site.url}/blog/${post.slug}</link>
-      <guid>${site.url}/blog/${post.slug}</guid>
+      <link>${site.url}/en/blog/${post.slug}</link>
+      <guid>${site.url}/en/blog/${post.slug}</guid>
       <description>${escape(post.description)}</description>
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
     </item>`,
@@ -31,8 +34,8 @@ export function GET() {
 <rss version="2.0">
   <channel>
     <title>${escape(site.fullName)} — Blog</title>
-    <link>${site.url}/blog</link>
-    <description>${escape(site.description)}</description>
+    <link>${site.url}/en/blog</link>
+    <description>${escape(en.meta.description)}</description>
     <language>en</language>${lastBuild}
 ${items}
   </channel>

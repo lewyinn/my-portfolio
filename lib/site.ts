@@ -7,8 +7,6 @@ export const site = {
   fullName: "Moch. Ridho Kurniawan",
   role: "Software Developer",
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
-  description:
-    "Moch. Ridho Kurniawan builds business websites and mobile apps with Next.js, React, and Flutter — from first sketch to launch.",
   location: "Indonesia",
   /** e.g. "hello@your-domain.com" */
   email: "",
@@ -21,12 +19,13 @@ export const site = {
   cv: "",
 };
 
+/** Navbar links: locale-free paths; labels come from `nav` in the dictionary. */
 export const nav = [
-  { href: "/", label: "Home" },
-  { href: "/about", label: "About" },
-  { href: "/work", label: "Work" },
-  { href: "/blog", label: "Blog" },
-];
+  { path: "/", key: "home" },
+  { path: "/about", key: "about" },
+  { path: "/work", key: "work" },
+  { path: "/blog", key: "blog" },
+] as const;
 
 export const contact = {
   emailHref: site.email ? `mailto:${site.email}` : "#contact",

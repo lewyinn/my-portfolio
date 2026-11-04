@@ -7,10 +7,12 @@ import { cardClass } from "@/components/ui/card";
 import { Container } from "@/components/ui/container";
 import { ArrowLeftIcon } from "@/components/ui/icons";
 import { JsonLd } from "@/components/ui/json-ld";
-import { PostCard } from "@/components/ui/post-card";
+import { PostCard, postCardLabels } from "@/components/ui/post-card";
 import { Reveal } from "@/components/ui/reveal";
 import { getPost, getPosts } from "@/lib/content";
 import { formatDate, relatedByTags } from "@/lib/content-utils";
+import { languageAlternates, localeLabels, localePath } from "@/lib/i18n";
+import { getI18n } from "@/lib/i18n-server";
 import { site } from "@/lib/site";
 
 // Every slug is prerendered from generateStaticParams, so known pages load instantly.
@@ -21,15 +23,19 @@ export function generateStaticParams() {
   return getPosts().map((post) => ({ slug: post.slug }));
 }
 
-export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps<"/[lang]/blog/[slug]">): Promise<Metadata> {
   const { slug } = await params;
+  const { locale } = await getI18n();
   const post = getPost(slug);
   if (!post) return {};
 
+  const path = `/blog/${post.slug}`;
   return {
     title: post.title,
     description: post.description,
-    alternates: { canonical: `/blog/${post.slug}` },
+    alternates: { canonical: localePath(locale, path), languages: languageAlternates(path) },
     openGraph: {
       type: "article",
       title: post.title,
@@ -42,13 +48,17 @@ export async function generateMetadata({ params }: PageProps<"/blog/[slug]">): P
   };
 }
 
-export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
+export default async function PostPage({ params }: PageProps<"/[lang]/blog/[slug]">) {
   const { slug } = await params;
+  const { locale, t } = await getI18n();
   const post = getPost(slug);
   if (!post) notFound();
 
   const related = relatedByTags(post, getPosts());
-  const url = `${site.url}/blog/${post.slug}`;
+  const home = `${site.url}${localePath(locale, "/")}`;
+  const blog = `${site.url}${localePath(locale, "/blog")}`;
+  const url = `${site.url}${localePath(locale, `/blog/${post.slug}`)}`;
+  const cardLabels = postCardLabels(t);
 
   return (
     <>
@@ -61,7 +71,7 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
             description: post.description,
             datePublished: post.date,
             dateModified: post.updated ?? post.date,
-            author: { "@type": "Person", name: site.fullName, url: site.url },
+            author: { "@type": "Person", name: site.fullName, url: home },
             mainEntityOfPage: url,
             keywords: post.tags.join(", "),
           },
@@ -69,8 +79,8 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
             "@context": "https://schema.org",
             "@type": "BreadcrumbList",
             itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: site.url },
-              { "@type": "ListItem", position: 2, name: "Blog", item: `${site.url}/blog` },
+              { "@type": "ListItem", position: 1, name: t.post.home, item: home },
+              { "@type": "ListItem", position: 2, name: t.blog.title, item: blog },
               { "@type": "ListItem", position: 3, name: post.title, item: url },
             ],
           },
@@ -79,19 +89,19 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
 
       <Container className="py-12 md:py-20">
         <Link
-          href="/blog"
+          href={localePath(locale, "/blog")}
           className="inline-flex min-h-11 items-center gap-2 text-sm text-muted transition-colors hover:text-fg"
         >
           <ArrowLeftIcon className="size-4" />
-          All articles
+          {t.common.allArticles}
         </Link>
 
         <div className="mt-8 grid gap-12 lg:grid-cols-[minmax(0,1fr)_220px] lg:gap-16">
           <article className="min-w-0">
             <Reveal className="flex flex-col gap-5 border-b border-line pb-10">
               <p className="text-[11px] tracking-[0.2em] text-muted uppercase">
-                <time dateTime={post.date}>{formatDate(post.date)}</time> · {post.readingTime} min
-                read
+                <time dateTime={post.date}>{formatDate(post.date, localeLabels[locale].date)}</time>{" "}
+                · {post.readingTime} {t.common.minRead}
               </p>
               <h1 className="font-display text-[clamp(48px,7vw,96px)] leading-[0.92] uppercase">
                 {post.title}
@@ -110,14 +120,16 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
             </Reveal>
 
             <Reveal delay={0.1} className="prose-article mt-10 max-w-[68ch]">
-              <MDXContent code={post.body} />
+              <MDXContent code={post.body} locale={locale} />
             </Reveal>
           </article>
 
           {post.toc.length ? (
             <aside className="hidden lg:block">
-              <nav aria-label="On this page" className="sticky top-28 flex flex-col gap-3">
-                <p className="text-[11px] tracking-[0.24em] text-muted uppercase">On this page</p>
+              <nav aria-label={t.post.onThisPage} className="sticky top-28 flex flex-col gap-3">
+                <p className="text-[11px] tracking-[0.24em] text-muted uppercase">
+                  {t.post.onThisPage}
+                </p>
                 <ul className="flex flex-col gap-2 border-l border-line text-sm">
                   {post.toc.map((entry) => (
                     <li key={entry.url}>
@@ -139,22 +151,27 @@ export default async function PostPage({ params }: PageProps<"/blog/[slug]">) {
           className={`${cardClass} mt-20 flex flex-col items-start justify-between gap-5 p-6 sm:flex-row sm:items-center md:p-8`}
         >
           <p className="relative font-display text-3xl leading-none md:text-4xl">
-            HAVE A PROJECT IN MIND? <span className="text-accent">LET&apos;S TALK.</span>
+            {t.post.ctaLead} <span className="text-accent">{t.post.ctaAccent}</span>
           </p>
-          <ButtonLink href="/#contact" variant="primary" arrow className="relative">
-            Start a project
+          <ButtonLink
+            href={localePath(locale, "/#contact")}
+            variant="primary"
+            arrow
+            className="relative"
+          >
+            {t.common.startProject}
           </ButtonLink>
         </Reveal>
 
         {related.length ? (
           <section aria-labelledby="related" className="mt-20 flex flex-col gap-6">
             <h2 id="related" className="font-display text-4xl leading-none md:text-5xl">
-              KEEP <span className="text-accent">READING</span>
+              {t.post.keep} <span className="text-accent">{t.post.reading}</span>
             </h2>
             <ul className="grid gap-4 md:grid-cols-2">
               {related.map((item) => (
                 <li key={item.slug}>
-                  <PostCard post={item} />
+                  <PostCard post={item} locale={locale} labels={cardLabels} />
                 </li>
               ))}
             </ul>

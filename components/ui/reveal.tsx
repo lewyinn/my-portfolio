@@ -35,6 +35,7 @@ const tags = {
   ol: motion.ol,
   ul: motion.ul,
   li: motion.li,
+  dl: motion.dl,
 };
 
 type Tag = keyof typeof tags;

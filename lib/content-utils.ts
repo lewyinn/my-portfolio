@@ -31,8 +31,9 @@ export function relatedByTags<T extends { slug: string; date: string; tags: stri
   return [...scored, ...fill].slice(0, limit);
 }
 
-export function formatDate(iso: string): string {
-  return new Intl.DateTimeFormat("en", {
+/** Short date like "Nov 3, 2026" (en) or "3 Nov 2026" (id-ID). */
+export function formatDate(iso: string, locale = "en"): string {
+  return new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "short",
     day: "numeric",

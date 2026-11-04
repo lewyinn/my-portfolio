@@ -5,6 +5,7 @@ import { useRef } from "react";
 import { ButtonLink } from "@/components/ui/button-link";
 import { GlowOrb } from "@/components/ui/glow";
 import { PixelR } from "@/components/ui/pixel-r";
+import type { Dictionary } from "@/lib/dictionaries/en";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 const letters = "PORTFOLIO".split("");
@@ -15,7 +16,9 @@ const fadeUp = (delay: number) => ({
   transition: { duration: 0.8, ease, delay },
 });
 
-export function Hero() {
+type HeroProps = { t: Dictionary["hero"]; startProject: string };
+
+export function Hero({ t, startProject }: HeroProps) {
   const ref = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
@@ -39,7 +42,7 @@ export function Hero() {
         className="relative flex flex-col items-center gap-6 md:gap-7"
       >
         <motion.p {...fadeUp(0.1)} className="text-[11px] tracking-[0.32em] text-muted uppercase">
-          Software Developer
+          {t.eyebrow}
         </motion.p>
 
         <motion.div
@@ -70,12 +73,11 @@ export function Hero() {
         </h1>
 
         <motion.p {...fadeUp(0.8)} className="max-w-xl text-base leading-relaxed md:text-lg">
-          I design and build business websites and mobile apps with Next.js, React, and Flutter —
-          from first sketch to launch.
+          {t.intro}
         </motion.p>
 
         <motion.p {...fadeUp(0.9)} className="text-[13px] text-muted md:text-sm">
-          Remote · Indonesia · <span className="text-accent">Open for new projects</span>
+          {t.location} · <span className="text-accent">{t.status}</span>
         </motion.p>
 
         <motion.div
@@ -83,9 +85,9 @@ export function Hero() {
           className="mt-2 flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row sm:gap-3"
         >
           <ButtonLink href="#contact" variant="primary" arrow>
-            Start a project
+            {startProject}
           </ButtonLink>
-          <ButtonLink href="#work">View work</ButtonLink>
+          <ButtonLink href="#work">{t.viewWork}</ButtonLink>
         </motion.div>
       </motion.div>
 
@@ -96,7 +98,7 @@ export function Hero() {
         aria-hidden="true"
         className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2.5 text-[10px] tracking-[0.32em] text-muted"
       >
-        <span>SCROLL</span>
+        <span>{t.scroll}</span>
         <span className="relative h-8 w-px overflow-hidden bg-line">
           <motion.span
             className="absolute inset-x-0 top-0 h-1/2 bg-muted"

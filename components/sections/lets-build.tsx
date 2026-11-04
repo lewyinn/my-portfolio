@@ -3,9 +3,10 @@
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 import { GlowOrb } from "@/components/ui/glow";
+import type { Dictionary } from "@/lib/dictionaries/en";
 
 /** Big "LET'S BUILD." band that grows into place as it scrolls into view. */
-export function LetsBuild() {
+export function LetsBuild({ t }: { t: Dictionary["letsBuild"] }) {
   const ref = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "center center"] });
@@ -16,7 +17,7 @@ export function LetsBuild() {
     <section
       ref={ref}
       id="lets-build"
-      aria-label="Let's build"
+      aria-label={`${t.lead} ${t.accent}`}
       className="relative flex min-h-[340px] items-center justify-center overflow-hidden px-5 md:min-h-[480px]"
     >
       <GlowOrb
@@ -27,7 +28,7 @@ export function LetsBuild() {
         style={reduceMotion ? undefined : { scale, opacity }}
         className="relative text-center font-display text-[clamp(80px,12vw,180px)] leading-[0.9] will-change-transform"
       >
-        LET&apos;S <span className="text-accent">BUILD.</span>
+        {t.lead} <span className="text-accent">{t.accent}</span>
       </motion.p>
     </section>
   );

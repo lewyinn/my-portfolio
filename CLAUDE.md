@@ -24,20 +24,22 @@ Personal portfolio for Moch. Ridho Kurniawan (Software Developer). The full plan
 
 ## Where things live
 
-- `app/` — routes: `/`, `/about`, `/work` (reuse the `About`/`Work` sections with `headingAs="h1"`; no Contact section there, so their CTAs link to `/#contact`; `/about` hides What I do and How I work via `showServices={false}`), `/blog`, `/blog/[slug]`, `/projects/[slug]`, plus `sitemap.ts`, `robots.ts`, `rss.xml/route.ts`, `opengraph-image.tsx`, `icon.svg`, `not-found.tsx`
+- `app/[lang]/` — every page lives under the language segment (`en`, `id`): `/[lang]`, `/[lang]/about`, `/[lang]/work` (reuse the `About`/`Work` sections with `headingAs="h1"`; no Contact section there, so their CTAs link to `/[lang]#contact`; `/about` hides What I do and How I work via `showServices={false}`), `/[lang]/blog`, `/[lang]/blog/[slug]`, `/[lang]/projects/[slug]`, `not-found.tsx`, `opengraph-image.tsx`. The root layout is `app/[lang]/layout.tsx`.
+- `app/` root — `sitemap.ts` (both languages with hreflang), `robots.ts`, `rss.xml/route.ts` (English), `icon.svg`, `globals.css`. `proxy.ts` (project root) redirects URLs without a language prefix to the saved choice (`NEXT_LOCALE` cookie), else the browser language, else English.
 - `components/sections/` — homepage sections (Hero, LetsBuild, About → Stack/Services/Process, Perspective, Work, LatestWriting, Contact) and the blog list
 - `components/layout/` — header, footer, side labels (left edge only), `SectionIndex` (homepage right-edge ruler), back-to-top, scroll progress
 - `components/ui/` — reusable pieces: `Logo`, `PixelR`, `AnimatedText`/`SectionHeading`, `Reveal`/`Stagger`, `ButtonLink`, `Chip`, `Media`, `Marquee`, `PostCard`, `JsonLd`, `GlowOrb`/`SectionGlow`, `FloatingShapes` + `shapes-3d`, `cardClass`
 - `components/mdx/` — MDX renderer and components (`Callout`, copyable code blocks)
 - `content/blog/*.mdx`, `content/projects/*.mdx` — articles and case studies (Velite output goes to `.velite/`, imported as `#site/content`)
-- `lib/site.ts` — name, URL, contact links (empty values show as placeholders); `lib/data.ts` — services, stack, process steps; `lib/content.ts` — content getters; `lib/content-utils.ts` — pure helpers (tested)
+- `lib/site.ts` — name, URL, contact links (empty values show as placeholders); `lib/i18n.ts` — locales, `localePath()`, `languageAlternates()`; `lib/i18n-server.ts` — `getI18n()` (locale from `next/root-params` + dictionary, Server Components only); `lib/dictionaries/en.ts` + `id.ts` — all UI copy (`id` is typed as `Dictionary`, so both must have the same keys); `lib/about.ts` — all About copy per language (photo, intro, bio paragraphs, facts, Journey timeline; the owner edits this file); `lib/data.ts` — services, stack channels (`stackGroups`), process steps, marquee; `lib/content.ts` — content getters; `lib/content-utils.ts` — pure helpers (tested)
 
 ## Design rules
 
 - Dark theme only. Palette is Night Mint; use the tokens, never raw hex in components:
   `bg-ink`, `bg-surface`, `border-line`, `text-fg`, `text-muted`, `text-accent` / `bg-accent`, `text-on-accent`. (The background token is `ink`, not `base`, because `text-base` is Tailwind's font-size utility.)
-- Decorative tokens `deco-yellow`, `deco-blue`, `deco-pink` exist **only** for the services scenes (`ServicesPanel`) and the 3D floating icons. Don't use them for UI, text, or cards.
-- Each service in `ServicesPanel` has its own scene (`scenes` map in `components/sections/services-panel.tsx`, keyed by each service's `cmd` from `lib/data.ts`): color family, blob shapes, dashed path, pill positions, and motifs. Business = blue, browser + cursor; Mobile = pink, phone + badge + signal; Landing = mint, target + arrow + sparkle; Web apps = yellow, bar chart + grid + `</>`. A new service needs a new scene entry.
+- Decorative tokens `deco-yellow`, `deco-blue`, `deco-pink` exist **only** for the services scenes (`ServicesPanel`), the Skills & Tools mixer (one tone per channel in `stack.tsx`), and the 3D floating icons. Don't use them for UI, text, or cards.
+- Each service in `ServicesPanel` has its own scene (`scenes` map in `components/sections/services-panel.tsx`, keyed by each service's `cmd` from `lib/data.ts`): color family, blob shapes, dashed path, six icon tiles (line icons from the `icons` map in that file, no tool names), and motifs. The dashed path marches (`strokeDashoffset`) with a colored dot traveling along it, blobs slowly rotate, tiles and decorations float; all of it is transform/dash-offset only and the path animation is skipped for reduced motion. Business = blue, browser + cursor; Mobile = pink, phone + badge + signal; Landing = mint, target + arrow + sparkle; Web apps = yellow, bar chart + grid + `</>`. A new service needs a new scene entry.
+- `Stack` ("Skills & tools") is a mixer board after the owner's reference: equalizer bars, the channel name as letter tiles, a `$ compile --stack <name>` line, a scrolling tool strip, then channel cards and tool chips. Channels come from `stackGroups`.
 - Accent (mint) is rare: only the last word of each section heading (use `SectionHeading`), primary CTAs, the "Open for new projects" status, the logo cursor and pixel, marquee separators, and the active navbar link marker (dashed underline, mobile diamond). Never body text or section backgrounds.
 - Fonts: `font-display` (Bebas Neue) for headings and big numbers, `font-sans` (Geist) for everything else, `font-mono` (Geist Mono) for the logo and small code-like details (glyphs, `$ build` line, code blocks).
 - Logo: `<Logo />` (W2 wordmark, `blink` only in the navbar) and `<PixelR />` (M1 mark). Favicon is `app/icon.svg`.
@@ -64,7 +66,8 @@ Personal portfolio for Moch. Ridho Kurniawan (Software Developer). The full plan
 - Server Components by default; add `"use client"` only for real interactivity or Motion.
 - Client components must not import `@/lib/content` at runtime (it pulls all MDX into the bundle). Pass plain data as props; type-only imports are fine.
 - Dynamic routes must return at least one param from `generateStaticParams` (Cache Components requirement), so keep at least one post and one project.
-- Pages that `await params` outside `<Suspense>` trip the dev "instant navigation" check. `/blog/[slug]` and `/projects/[slug]` are fully prerendered, so they set `export const instant = false` (only unknown slugs block). Do the same for new prerendered dynamic pages, or wrap the params access in `<Suspense>`.
+- Reading `params` or the `lang` root param outside `<Suspense>` trips the dev "instant navigation" check. Every page under `app/[lang]` and the `[lang]` layout are fully prerendered, so they set `export const instant = false` (only unknown slugs or languages block). Do the same for new pages.
+- i18n: server components get text with `const { locale, t } = await getI18n()`; client components never import the dictionaries, they receive the strings (and `locale`) as props. Build every internal link with `localePath(locale, "/path")`; give every page `alternates: { canonical: localePath(...), languages: languageAlternates("/path") }`. `next/root-params` does not work in route handlers (image routes, RSS): read `params.lang` there instead. Blog and project MDX stay in English for both languages (`blog.languageNote` says so on the Indonesian blog).
 - File names kebab-case (`pixel-r.tsx`), components PascalCase, named exports.
 - Every page exports metadata (`metadata` or `generateMetadata`) and has exactly one `h1`.
 - Every image uses `next/image` with a real `alt` (via `Media` for project/article images).
@@ -72,7 +75,8 @@ Personal portfolio for Moch. Ridho Kurniawan (Software Developer). The full plan
 
 ## Copy
 
-- All site copy is in English.
+- The site is in English and Indonesian. New UI text goes into both dictionaries; nothing user-facing is hard-coded in components.
+- Write copy plainly, like a person (humanizer rules): everyday words, no em dashes, no "not X but Y", no hype. Indonesian is casual and friendly with "kamu" and the tech words people actually use (website, tools, landing page, deploy).
 - No invented numbers or claims. Unknown facts stay as visible placeholders like `[YEAR]` until the owner fills them in.
 
 ## Workflow

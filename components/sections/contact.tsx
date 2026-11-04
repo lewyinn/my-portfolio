@@ -3,9 +3,12 @@ import { Container } from "@/components/ui/container";
 import { GlowOrb, SectionGlow } from "@/components/ui/glow";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionLabel } from "@/components/ui/section-label";
+import { getI18n } from "@/lib/i18n-server";
 import { contact } from "@/lib/site";
 
-export function Contact() {
+export async function Contact() {
+  const { t } = await getI18n();
+
   return (
     <section id="contact" className="relative overflow-hidden">
       <SectionGlow />
@@ -15,11 +18,11 @@ export function Contact() {
       />
 
       <Container className="flex flex-col gap-10 py-24 md:gap-14 md:py-36">
-        <SectionLabel bracketed={false}>Get in touch</SectionLabel>
+        <SectionLabel bracketed={false}>{t.contact.label}</SectionLabel>
         <div className="flex flex-col items-center gap-8 text-center md:gap-11">
           <SectionHeading
-            lead="LET'S"
-            accent="TALK."
+            lead={t.contact.lead}
+            accent={t.contact.accent}
             className="font-display text-[clamp(88px,13vw,184px)] leading-[0.85]"
           />
           <Reveal delay={0.2}>
@@ -50,7 +53,7 @@ export function Contact() {
               href={contact.whatsappHref}
               className="inline-flex min-h-11 items-center text-xs tracking-[0.16em] text-muted uppercase transition-colors hover:text-fg"
             >
-              or chat on WhatsApp ↗
+              {t.contact.whatsapp}
             </a>
           </Reveal>
         </div>

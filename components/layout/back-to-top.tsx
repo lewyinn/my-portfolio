@@ -5,7 +5,7 @@ import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/
 import { useState } from "react";
 import { ArrowUpIcon } from "@/components/ui/icons";
 
-export function BackToTop() {
+export function BackToTop({ label }: { label: string }) {
   const [visible, setVisible] = useState(false);
   const { scrollY } = useScroll();
   const lenis = useLenis();
@@ -22,7 +22,7 @@ export function BackToTop() {
       {visible ? (
         <motion.button
           type="button"
-          aria-label="Back to top"
+          aria-label={label}
           onClick={toTop}
           initial={{ opacity: 0, scale: 0.8, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}

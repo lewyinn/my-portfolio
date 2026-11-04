@@ -2,19 +2,29 @@
 
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
-import { PostCard, type PostCardData } from "@/components/ui/post-card";
+import { PostCard, type PostCardData, type PostCardLabels } from "@/components/ui/post-card";
+import type { Locale } from "@/lib/i18n";
 
 /** Blog index with tag filters. Filtering happens on the client so the page stays static. */
-export function BlogList({ posts }: { posts: PostCardData[] }) {
+type BlogListProps = {
+  posts: PostCardData[];
+  locale: Locale;
+  labels: PostCardLabels & { all: string; filter: string };
+};
+
+export function BlogList({ posts, locale, labels }: BlogListProps) {
   const tags = Array.from(new Set(posts.flatMap((post) => post.tags))).sort();
   const [tag, setTag] = useState<string | null>(null);
   const visible = tag ? posts.filter((post) => post.tags.includes(tag)) : posts;
 
-  const filters = [{ label: "All", value: null }, ...tags.map((t) => ({ label: t, value: t }))];
+  const filters = [
+    { label: labels.all, value: null },
+    ...tags.map((t) => ({ label: t, value: t })),
+  ];
 
   return (
     <div className="flex flex-col gap-8">
-      <div role="group" aria-label="Filter by tag" className="flex flex-wrap gap-2">
+      <div role="group" aria-label={labels.filter} className="flex flex-wrap gap-2">
         {filters.map((filter) => {
           const active = filter.value === tag;
           return (
@@ -46,7 +56,7 @@ export function BlogList({ posts }: { posts: PostCardData[] }) {
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              <PostCard post={post} />
+              <PostCard post={post} locale={locale} labels={labels} />
             </motion.li>
           ))}
         </AnimatePresence>

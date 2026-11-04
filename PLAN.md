@@ -13,7 +13,7 @@
 | Positioning | **Software Developer** |
 | Jasa (urutan prioritas) | 1. Business Websites · 2. Mobile Apps (Flutter) · 3. Landing Pages · 4. Web Apps |
 | Target | Pemilik bisnis/UMKM, startup, recruiter |
-| Bahasa konten | **Inggris** (`lang="en"`), termasuk kata kunci SEO |
+| Bahasa konten | **Inggris dan Indonesia** di `/en/...` dan `/id/...` (kamus di `lib/dictionaries`, tombol EN/ID di header, hreflang di metadata dan sitemap). Artikel blog dan studi kasus tetap bahasa Inggris |
 | Konversi utama | Klik email / WhatsApp |
 
 **Metrik sukses (3 bulan pertama):** Lighthouse ≥ 90 di semua kategori · semua halaman terindeks Google · ≥ 5 artikel · ≥ 3 case study · ≥ 1 inquiry/bulan.
@@ -123,11 +123,11 @@ Muat lewat `next/font` agar tidak ada layout shift.
 | — | Indeks section (desktop ≥ 1100px, homepage saja) | Penggaris vertikal di tepi kanan: garis + nomor 01–07, section aktif = garis panjang, nomor tebal, ikon belah ketupat + nama section. Klik = scroll halus ke section |
 | 1 | Hero | Label "Software Developer" · ikon Pixel R · **PORTFOLIO** raksasa · satu kalimat jasa · "Remote · Indonesia · Open for new projects" · CTA "Start a project" + "View work" · penanda SCROLL |
 | 2 | Band | **LET'S BUILD.** besar di tengah |
-| 3 | About | ABOUT ME + paragraf · foto · daftar kata DESIGNING / BUILDING / SHIPPING / IMPROVING · tombol CV, GitHub, LinkedIn |
-| 3a | My Stack | 2 kartu: **Frontend** dan **Backend** berisi chip teknologi |
-| 3b | What I do | "Scene" layanan yang **berbeda untuk tiap layanan**: label "Service 01", nama layanan besar di atas dua blob berwarna, garis putus-putus, nama tool sebagai pill miring (di mobile jadi chip), dan motif khusus. Business Websites = biru (jendela browser, kursor, garis bergelombang); Mobile Apps = pink (ponsel, badge notifikasi, sinyal, garis melingkar); Landing Pages = mint (target, panah naik, bintang, garis menanjak); Web Apps = kuning (grafik batang, grid dashboard, `</>`, garis zig-zag). Klik kartu layanan di bawahnya dan scene "memantul" berganti. |
+| 3 | About | ABOUT ME + intro · foto (sticky) · bio beberapa paragraf · 4 kartu fakta (Based in, Role, Experience, Focus) · tombol CV, GitHub, LinkedIn · timeline **Journey** (kerja & pendidikan). Semua isi diedit di `lib/about.ts` |
+| 3a | Skills & Tools | "Mixer board": bar atas `MIX / 01 · FRONTEND STACK` + titik channel, equalizer beranimasi (warna per channel), nama channel sebagai ubin huruf, baris `$ compile --stack frontend` dengan kursor berkedip, deretan tool berjalan di bawah. 4 kartu channel (Frontend, Backend, Mobile, Tools) untuk memilih, chip tool + caption `CHANNEL: … TOOLS`. Data di `stackGroups` (`lib/data.ts`) |
+| 3b | What I do | "Scene" layanan yang **berbeda untuk tiap layanan**: label "Service 01", nama layanan besar di atas dua blob berwarna, garis putus-putus yang berjalan + titik berwarna yang mengalir di sepanjang garis, blob berputar pelan, dekorasi melayang, ikon garis yang relevan per layanan dalam ubin miring (bukan nama tool; di mobile jadi baris ikon), dan motif khusus. Business Websites = biru (jendela browser, kursor, garis bergelombang); Mobile Apps = pink (ponsel, badge notifikasi, sinyal, garis melingkar); Landing Pages = mint (target, panah naik, bintang, garis menanjak); Web Apps = kuning (grafik batang, grid dashboard, `</>`, garis zig-zag). Klik kartu layanan di bawahnya dan scene "memantul" berganti. |
 | 3c | Built to flow | 4 langkah: Discover → Build → Refine → Launch |
-| 4 | Perspective | "PRETTY IS EASY. / I BUILD WHAT WORKS." + paragraf tentang hasil setelah launch + marquee DESIGN · DEVELOP · OPTIMIZE · SHIP |
+| 4 | Perspective | "PRETTY IS EASY. / I BUILD WHAT WORKS." + paragraf tentang hasil setelah launch + marquee SOFTWARE DEVELOPER |
 | 5 | My Work | Kartu featured horizontal (Internity) · grid kartu project (pill kategori, CODE/LIVE) · stat bar "START YOURS" |
 | 6 | Latest Writing | 3 kartu artikel terbaru + tombol "All articles" |
 | 7 | Contact | "Get in touch" · **LET'S TALK.** raksasa · email bergaris bawah · link WhatsApp |
@@ -182,21 +182,24 @@ draft: false
 ```
 portfolio/
 ├─ app/
-│  ├─ page.tsx                 # beranda
-│  ├─ projects/[slug]/page.tsx
-│  ├─ blog/page.tsx, blog/[slug]/page.tsx
-│  ├─ layout.tsx, globals.css  # token @theme
+│  ├─ [lang]/                  # en, id
+│  │  ├─ layout.tsx            # root layout, <html lang>
+│  │  ├─ page.tsx              # beranda
+│  │  ├─ about/, work/, blog/, blog/[slug]/, projects/[slug]/
+│  │  ├─ not-found.tsx
+│  │  └─ opengraph-image.tsx
+│  ├─ globals.css              # token @theme
 │  ├─ sitemap.ts, robots.ts, rss.xml/route.ts
-│  ├─ icon.tsx                 # dari grid Pixel R
-│  └─ opengraph-image.tsx
+│  └─ icon.svg                 # dari grid Pixel R
+├─ proxy.ts                    # arahkan URL tanpa bahasa ke /en atau /id
 ├─ components/
-│  ├─ layout/                  # SiteHeader, SiteFooter, SideLabels, BackToTop
+│  ├─ layout/                  # SiteHeader, LanguageSwitch, SiteFooter, SideLabels, SectionIndex, BackToTop
 │  ├─ sections/                # Hero, LetsBuild, About, Stack, Services, Process, Perspective, Work, LatestWriting, Contact, BlogList
 │  ├─ ui/                      # Logo, PixelR, AnimatedText, Reveal, ButtonLink, Chip, Media, Marquee, PostCard, JsonLd
 │  ├─ mdx/                     # MDXContent, Callout, CopyPre (kode bisa disalin)
 │  └─ providers.tsx            # Lenis + MotionConfig
 ├─ content/blog/, content/projects/
-├─ lib/                        # seo.ts, content.ts
+├─ lib/                        # i18n.ts, i18n-server.ts, dictionaries/ (en, id), about.ts, data.ts, site.ts, content.ts
 ├─ public/                     # favicon.svg, cv.pdf, gambar
 ├─ velite.config.ts
 ├─ PLAN.md
@@ -290,7 +293,7 @@ portfolio/
 - Token warna dan aturan aksen (bagian 3.1).
 - Server Components default, TypeScript strict.
 - Setiap halaman wajib `generateMetadata` + satu `h1`; gambar wajib `alt`.
-- Copy dalam bahasa Inggris, tanpa klaim yang tidak bisa dibuktikan.
+- Copy dalam bahasa Inggris dan Indonesia (santai, kata populer, gaya humanizer), tanpa klaim yang tidak bisa dibuktikan.
 - Jangan commit `.env`.
 
 ---
@@ -315,7 +318,8 @@ Bagian ini masih placeholder di mockup:
 - [ ] Foto potret (hitam-putih)
 - [ ] CV (PDF)
 - [ ] Paragraf About: latar belakang + cara kerja
-- [ ] Stack asli Frontend & Backend
+- [ ] Stack asli per channel (Frontend, Backend, Mobile, Tools) di `lib/data.ts`
+- [ ] Isi About di `lib/about.ts`: foto, intro, bio, fakta, Journey
 - [ ] Internity: stack, masalah yang diselesaikan, hasil terukur, screenshot, tahun
 - [ ] 2 project lain (1 website, 1 mobile app) beserta detail yang sama
 - [ ] Email, nomor WhatsApp, link GitHub/LinkedIn → isi di `lib/site.ts`

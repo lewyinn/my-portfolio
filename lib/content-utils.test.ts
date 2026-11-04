@@ -52,5 +52,6 @@ describe("relatedByTags", () => {
 describe("formatDate", () => {
   it("formats ISO dates in UTC", () => {
     expect(formatDate("2026-11-03T00:00:00.000Z")).toBe("Nov 3, 2026");
+    expect(formatDate("2026-11-03T00:00:00.000Z", "id-ID")).toBe("3 Nov 2026");
   });
 });
