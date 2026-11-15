@@ -2,11 +2,10 @@ import { SectionHeading } from "@/components/ui/animated-text";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionLabel } from "@/components/ui/section-label";
 import { services } from "@/lib/data";
-import { getI18n } from "@/lib/i18n-server";
+import { t } from "@/lib/dictionary";
 import { ServicesPanel } from "./services-panel";
 
-export async function Services() {
-  const { t } = await getI18n();
+export function Services() {
   const items = services.map((service) => ({ ...service, ...t.services.items[service.cmd] }));
 
   return (
@@ -19,15 +18,13 @@ export async function Services() {
           className="font-display text-[clamp(48px,5.6vw,80px)] leading-[0.9]"
         />
         <Reveal>
-          <p className="max-w-[460px] text-[15px] leading-relaxed text-muted">{t.services.intro}</p>
+          <p className="max-w-[560px] text-[15px] leading-relaxed text-muted">{t.services.intro}</p>
         </Reveal>
       </div>
-      <Reveal>
-        <ServicesPanel
-          services={items}
-          labels={{ service: t.services.service, group: t.services.group }}
-        />
-      </Reveal>
+      <ServicesPanel
+        services={items}
+        labels={{ service: t.services.service, group: t.services.group }}
+      />
     </div>
   );
 }

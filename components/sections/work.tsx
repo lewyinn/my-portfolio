@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { SectionHeading } from "@/components/ui/animated-text";
-import { ButtonLink } from "@/components/ui/button-link";
 import { cardClass, sheenClass } from "@/components/ui/card";
 import { Chip } from "@/components/ui/chip";
 import { Container } from "@/components/ui/container";
@@ -10,9 +9,7 @@ import { Media } from "@/components/ui/media";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionLabel } from "@/components/ui/section-label";
 import { getProjects, type Project } from "@/lib/content";
-import type { Dictionary } from "@/lib/dictionaries/en";
-import { localePath, type Locale } from "@/lib/i18n";
-import { getI18n } from "@/lib/i18n-server";
+import { t as dict, type Dictionary } from "@/lib/dictionary";
 
 /** Round arrow button in a card corner that inverts and rotates on hover. */
 function CornerArrow({ className = "" }: { className?: string }) {
@@ -25,24 +22,108 @@ function CornerArrow({ className = "" }: { className?: string }) {
   );
 }
 
-type CardProps = { project: Project; locale: Locale; t: Dictionary["work"] };
+const blueprintAccent = {
+  blue: {
+    dot: "bg-deco-blue",
+    pill: "border-deco-blue/30 bg-ink/85 text-deco-blue",
+    glow: "radial-gradient(circle at 50% 45%, rgb(76 194 255 / 0.16), transparent 68%)",
+    bar: "bg-deco-blue/65",
+    line: "border-deco-blue/25",
+  },
+  teal: {
+    dot: "bg-deco-teal",
+    pill: "border-deco-teal/30 bg-ink/85 text-deco-teal",
+    glow: "radial-gradient(circle at 50% 45%, rgb(45 212 191 / 0.16), transparent 68%)",
+    bar: "bg-deco-teal/65",
+    line: "border-deco-teal/25",
+  },
+  yellow: {
+    dot: "bg-deco-yellow",
+    pill: "border-deco-yellow/30 bg-ink/85 text-deco-yellow",
+    glow: "radial-gradient(circle at 50% 45%, rgb(242 193 78 / 0.16), transparent 68%)",
+    bar: "bg-deco-yellow/65",
+    line: "border-deco-yellow/25",
+  },
+  accent: {
+    dot: "bg-accent",
+    pill: "border-accent/30 bg-ink/85 text-accent",
+    glow: "radial-gradient(circle at 50% 45%, rgb(94 242 176 / 0.16), transparent 68%)",
+    bar: "bg-accent/65",
+    line: "border-accent/25",
+  },
+} as const;
 
-function FeaturedCard({ project, locale, t }: CardProps) {
+function FeaturedPreview({ project, t }: { project: Project; t: Dictionary["work"] }) {
+  if (project.cover || !project.showcase) {
+    return (
+      <Media
+        src={project.cover}
+        alt={`${project.title} ${t.screenshot}`}
+        label={`${project.title} ${t.screenshot} · 1600×1000`}
+        className="absolute inset-0 transition-[scale] duration-700 ease-out group-hover:scale-[1.04]"
+      />
+    );
+  }
+
+  return (
+    <div
+      className="absolute inset-0 flex items-center justify-center bg-surface-deep p-6 transition-[scale] duration-700 ease-out group-hover:scale-[1.03]"
+      style={{
+        backgroundImage:
+          "radial-gradient(circle at 50% 35%, rgb(94 242 176 / 0.12), transparent 68%)",
+      }}
+    >
+      <div className="w-full max-w-[440px] overflow-hidden rounded-xl border border-white/10 bg-ink/90 shadow-none">
+        <div className="flex items-center justify-between border-b border-white/[0.08] px-3.5 py-2.5 font-mono text-[10px] text-muted">
+          <span className="flex items-center gap-1.5">
+            <span className="size-2 rounded-full bg-white/20" />
+            <span className="size-2 rounded-full bg-white/20" />
+            <span className="size-2 rounded-full bg-accent/70" />
+          </span>
+          <span className="truncate">{project.showcase.domain}</span>
+          <span className="text-accent">LIVE</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2 border-b border-white/[0.06] p-3.5">
+          {project.showcase.stats.slice(0, 3).map((stat) => (
+            <div
+              key={stat.label}
+              className="rounded-lg border border-white/[0.06] bg-surface p-2.5"
+            >
+              <p className="truncate font-mono text-[9px] text-muted uppercase">{stat.label}</p>
+              <p className="mt-1 truncate text-xs font-semibold text-fg">{stat.value}</p>
+            </div>
+          ))}
+        </div>
+        <div className="flex flex-col gap-2 p-3.5">
+          {project.showcase.activities.slice(0, 2).map((act) => (
+            <div
+              key={act.title}
+              className="flex items-center justify-between gap-2 rounded-lg border border-white/[0.05] bg-surface/60 px-3 py-2 text-[11px]"
+            >
+              <span className="truncate text-fg/90">{act.title}</span>
+              <span className="shrink-0 rounded-full border border-accent/25 bg-accent/10 px-2 py-0.5 font-mono text-[9px] text-accent">
+                {act.badge}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type CardProps = { project: Project; t: Dictionary["work"] };
+
+function FeaturedCard({ project, t }: CardProps) {
   return (
     <Link
-      href={localePath(locale, `/projects/${project.slug}`)}
+      href={`/projects/${project.slug}`}
       className={`${cardClass} grid rounded-3xl md:grid-cols-2`}
     >
       <div className={sheenClass} />
-      <div className="relative min-h-[260px] overflow-hidden border-b border-white/[0.08] md:min-h-[440px] md:border-r md:border-b-0">
-        <Media
-          src={project.cover}
-          alt={`${project.title} ${t.screenshot}`}
-          label={`${project.title} ${t.screenshot} · 1600×1000`}
-          priority
-          className="absolute inset-0 transition-[scale] duration-700 ease-out group-hover:scale-[1.04]"
-        />
-        <span className="absolute top-4 left-4 flex items-center gap-2 rounded-full border border-white/15 bg-ink/85 px-3 py-1.5 text-[10px] font-semibold tracking-[0.2em]">
+      <div className="relative min-h-[280px] overflow-hidden border-b border-white/[0.08] md:min-h-[440px] md:border-r md:border-b-0">
+        <FeaturedPreview project={project} t={t} />
+        <span className="absolute top-4 left-4 flex items-center gap-2 rounded-full border border-white/15 bg-ink/85 px-3 py-1.5 font-mono text-[10px] font-semibold tracking-[0.2em]">
           <span className="size-1.5 rounded-full bg-accent" />
           {t.featured}
         </span>
@@ -54,7 +135,7 @@ function FeaturedCard({ project, locale, t }: CardProps) {
         >
           01
         </span>
-        <span className="text-[11px] tracking-[0.32em] text-muted uppercase">
+        <span className="font-mono text-[11px] tracking-[0.28em] text-muted uppercase">
           {project.category}
         </span>
         <h3 className="font-display text-[clamp(52px,5.4vw,80px)] leading-[0.9] uppercase">
@@ -78,13 +159,99 @@ function FeaturedCard({ project, locale, t }: CardProps) {
   );
 }
 
-function ProjectCard({ project, index, locale, t }: CardProps & { index: number }) {
+function UpcomingProjectCard({
+  project,
+  index,
+  t,
+}: {
+  project: Project;
+  index: number;
+  t: Dictionary["work"];
+}) {
+  const numStr = String(index).padStart(2, "0");
+  const toneKey = project.accent ?? (index % 2 === 0 ? "blue" : "teal");
+  const tone = blueprintAccent[toneKey];
+  const fileLabel = project.blueprintFile ?? `project-${numStr}.tsx`;
+  const progressLabel = project.blueprintProgress ?? (index % 2 === 0 ? "DEV · 70%" : "DEV · 55%");
+  const moduleTag = project.blueprintTag ?? (index % 2 === 0 ? "MODULE A" : "MODULE B");
+
+  return (
+    <article className={`${cardClass} flex h-full flex-col`}>
+      <div
+        className="relative aspect-[16/10] overflow-hidden border-b border-white/[0.08] bg-surface-deep p-5"
+        style={{ backgroundImage: tone.glow }}
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.06)_1px,transparent_1px)] [background-size:18px_18px] opacity-60"
+        />
+
+        {/* Top-left simple Category Pill ("● SEGERA HADIR") */}
+        <span className="relative inline-flex items-center gap-2 rounded-full border border-white/15 bg-ink/85 px-3 py-1 font-mono text-[10px] font-semibold tracking-[0.16em] uppercase">
+          <span className={`size-1.5 rounded-full ${tone.dot}`} />
+          {t.comingSoon}
+        </span>
+
+        {/* Top-right Badge ("02 · IN DEV", replaces arrow so non-clickable is obvious) */}
+        <span className="absolute top-5 right-5 rounded-full border border-white/10 bg-ink/85 px-3 py-1 font-mono text-[10px] tracking-[0.14em] text-muted uppercase">
+          {numStr} · {t.inDev}
+        </span>
+
+        {/* Mini Dark UI Blueprint Window */}
+        <div
+          className={`relative mx-auto mt-5 w-full max-w-[360px] rounded-xl border bg-ink/90 p-3.5 ${tone.line}`}
+        >
+          <div className="flex items-center justify-between gap-2 border-b border-white/[0.07] pb-2 font-mono text-[10px] text-muted">
+            <span className="truncate">{fileLabel}</span>
+            <span className="shrink-0 text-fg/80">{progressLabel}</span>
+          </div>
+          <div className="mt-3 flex flex-col gap-2">
+            <div className="flex items-center justify-between gap-2">
+              <span className={`h-2 w-24 rounded-full ${tone.bar}`} />
+              <span className="rounded border border-white/10 px-1.5 py-0.5 font-mono text-[9px] text-muted">
+                {moduleTag}
+              </span>
+            </div>
+            <div className="grid grid-cols-3 gap-2 pt-1">
+              <span className="h-8 rounded-lg border border-white/[0.06] bg-surface/80" />
+              <span className="h-8 rounded-lg border border-white/[0.06] bg-surface/80" />
+              <span className="h-8 rounded-lg border border-white/[0.06] bg-surface/80" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Minimal body per Figma revision: no specific project title and no description */}
+      <div className="relative flex flex-1 flex-col gap-3 p-6">
+        <div className={sheenClass} />
+        <span className="relative flex justify-between font-mono text-[11px] tracking-[0.22em] text-muted uppercase">
+          <span>{t.caseStudyLabel}</span>
+          <span>{numStr}</span>
+        </span>
+        <h3 className="relative font-display text-[36px] leading-[0.95] uppercase">
+          {t.comingSoon}
+        </h3>
+        <div className="relative mt-auto flex items-center justify-between border-t border-white/[0.08] pt-3.5 font-mono text-[11px] tracking-[0.16em] text-muted uppercase">
+          <span className="flex items-center gap-2">
+            <span className={`size-1.5 rounded-full ${tone.dot}`} />
+            {t.inProgressFooter}
+          </span>
+          <span>{project.year}</span>
+        </div>
+      </div>
+    </article>
+  );
+}
+
+function PublishedProjectCard({ project, index, t }: CardProps & { index: number }) {
+  const numStr = String(index).padStart(2, "0");
+
   return (
     <Link
-      href={localePath(locale, `/projects/${project.slug}`)}
+      href={`/projects/${project.slug}`}
       className={`${cardClass} flex h-full flex-col hover:-translate-y-1`}
     >
-      <div className="relative aspect-video overflow-hidden border-b border-white/[0.08]">
+      <div className="relative aspect-[16/10] overflow-hidden border-b border-white/[0.08]">
         <Media
           src={project.cover}
           alt={`${project.title} ${t.screenshot}`}
@@ -98,9 +265,9 @@ function ProjectCard({ project, index, locale, t }: CardProps & { index: number 
       </div>
       <div className="relative flex flex-1 flex-col gap-2.5 p-6">
         <div className={sheenClass} />
-        <span className="relative flex justify-between text-[11px] tracking-[0.24em] text-muted">
+        <span className="relative flex justify-between font-mono text-[11px] tracking-[0.24em] text-muted">
           <span>{project.year}</span>
-          <span>{String(index).padStart(2, "0")}</span>
+          <span>{numStr}</span>
         </span>
         <h3 className="relative font-display text-[40px] leading-[0.95] uppercase">
           {project.title}
@@ -120,8 +287,7 @@ type WorkProps = {
   headingAs?: "h1" | "h2";
 };
 
-export async function Work({ headingAs = "h2" }: WorkProps) {
-  const { locale, t: dict } = await getI18n();
+export function Work({ headingAs = "h2" }: WorkProps) {
   const t = dict.work;
   const projects = getProjects();
   const featured = projects.find((project) => project.featured) ?? projects[0];
@@ -138,41 +304,28 @@ export async function Work({ headingAs = "h2" }: WorkProps) {
             <SectionLabel>{t.label}</SectionLabel>
             <SectionHeading as={headingAs} lead={t.lead} accent={t.accent} />
           </div>
-          <Reveal className="max-w-[420px] md:text-right">
+          <Reveal className="max-w-[460px] md:text-right">
             <p className="leading-relaxed text-muted">{t.intro}</p>
           </Reveal>
         </div>
 
         {featured ? (
           <Reveal>
-            <FeaturedCard project={featured} locale={locale} t={t} />
+            <FeaturedCard project={featured} t={t} />
           </Reveal>
         ) : null}
 
         <Stagger className="grid gap-4 md:grid-cols-2" stagger={0.12}>
           {others.map((project, i) => (
             <StaggerItem key={project.slug} className="h-full">
-              <ProjectCard project={project} index={i + 2} locale={locale} t={t} />
+              {project.status === "coming-soon" ? (
+                <UpcomingProjectCard project={project} index={i + 2} t={t} />
+              ) : (
+                <PublishedProjectCard project={project} index={i + 2} t={t} />
+              )}
             </StaggerItem>
           ))}
         </Stagger>
-
-        <Reveal
-          className={`${cardClass} flex flex-col items-start justify-between gap-4 p-5 sm:flex-row sm:items-center md:px-8 md:py-6`}
-        >
-          <p className="relative flex items-baseline gap-3.5">
-            <span className="font-display text-[52px] leading-none">[X]+</span>
-            <span className="text-sm text-muted">{t.stat}</span>
-          </p>
-          <ButtonLink
-            href={localePath(locale, "/#contact")}
-            variant="primary"
-            arrow
-            className="relative w-full sm:w-auto"
-          >
-            {t.startYours}
-          </ButtonLink>
-        </Reveal>
       </Container>
     </section>
   );

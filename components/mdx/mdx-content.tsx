@@ -2,9 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 import * as runtime from "react/jsx-runtime";
-import { getDictionary } from "@/lib/dictionaries";
-import { localePath, type Locale } from "@/lib/i18n";
+import { t } from "@/lib/dictionary";
+import { BentoGrid, StackChips } from "./bento-grid";
 import { Callout } from "./callout";
+import { ChecklistCard } from "./checklist-card";
 import { CopyPre } from "./copy-pre";
 
 function Img({ src, alt = "", width, height }: ComponentPropsWithoutRef<"img">) {
@@ -21,34 +22,20 @@ function Img({ src, alt = "", width, height }: ComponentPropsWithoutRef<"img">) 
   );
 }
 
-/** MDX components for one language: internal links get the locale, code blocks its labels. */
-function createComponents(locale: Locale) {
-  const { copy, copied } = getDictionary(locale).common;
-
-  function Anchor({ href = "", ...props }: ComponentPropsWithoutRef<"a">) {
-    if (href.startsWith("#")) return <a href={href} {...props} />;
-    if (href.startsWith("/")) return <Link href={localePath(locale, href)} {...props} />;
-    return <a href={href} target="_blank" rel="noopener noreferrer" {...props} />;
-  }
-
-  function Pre(props: ComponentPropsWithoutRef<"pre">) {
-    return <CopyPre labels={{ copy, copied }} {...props} />;
-  }
-
-  return { a: Anchor, img: Img, pre: Pre, Callout };
+function Anchor({ href = "", ...props }: ComponentPropsWithoutRef<"a">) {
+  if (href.startsWith("#")) return <a href={href} {...props} />;
+  if (href.startsWith("/")) return <Link href={href} {...props} />;
+  return <a href={href} target="_blank" rel="noopener noreferrer" {...props} />;
 }
 
-type Components = ReturnType<typeof createComponents>;
+function Pre(props: ComponentPropsWithoutRef<"pre">) {
+  return <CopyPre labels={{ copy: t.common.copy, copied: t.common.copied }} {...props} />;
+}
 
-// Built once per language at module load, so the component identities stay stable.
-const componentsByLocale: Record<Locale, Components> = {
-  en: createComponents("en"),
-  id: createComponents("id"),
-};
+const components = { a: Anchor, img: Img, pre: Pre, Callout, ChecklistCard, BentoGrid, StackChips };
 
-type RenderMDX = (props: { components?: Components }) => ReactNode;
+type RenderMDX = (props: { components?: typeof components }) => ReactNode;
 
-// Velite compiles MDX to a function body. Evaluate it once per document and reuse it.
 const cache = new Map<string, RenderMDX>();
 
 function getMDXRenderer(code: string): RenderMDX {
@@ -60,8 +47,6 @@ function getMDXRenderer(code: string): RenderMDX {
   return render;
 }
 
-// Compiled MDX is a plain render function (no hooks), so it is called directly rather than
-// mounted as a component created during render.
-export function MDXContent({ code, locale }: { code: string; locale: Locale }) {
-  return getMDXRenderer(code)({ components: componentsByLocale[locale] });
+export function MDXContent({ code }: { code: string }) {
+  return getMDXRenderer(code)({ components });
 }

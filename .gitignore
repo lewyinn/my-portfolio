@@ -44,3 +44,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# ai & local tooling
+/.claude/
+
+# markdown docs (keep README.md)
+*.md
+!README.md

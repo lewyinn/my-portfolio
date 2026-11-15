@@ -1,0 +1,79 @@
+---
+title: "Republik Bimbel"
+subtitle: "Platform Bimbel, Simulasi Ujian CBT & CMS Admin"
+summary: "Website resmi bimbingan belajar, sistem simulasi ujian online (CBT & TKA) untuk siswa terdaftar maupun peserta umum, serta dashboard admin lengkap berbasis Laravel 12."
+category: "Web App · EdTech"
+year: "2026"
+order: 2
+status: "published"
+role: "Full-Stack Developer"
+projectType: "Web App, Portal CBT & CMS"
+stack: ["Laravel", "Blade", "MySQL", "Redis"]
+statusText: "Produksi · Live"
+tags: ["Web App", "Laravel", "CBT Online", "CMS"]
+cover: "/images/republik-bimbel-home.png"
+live: "https://republikbimbel.com"
+contributors:
+  - github: "lewyin"
+    name: "Ridho"
+    url: "https://github.com/lewyin"
+  - github: "Zastaa"
+    name: "Agung"
+    url: "https://github.com/Zastaa"
+---
+
+## Tantangan Awal
+
+Republik Bimbel membutuhkan platform web terpadu yang tidak hanya menjadi halaman profil lembaga bimbingan belajar dan pusat informasi berita, tetapi juga mampu menyelenggarakan simulasi ujian online (_Computer Assisted Test_ / TKA) yang stabil untuk siswa reguler maupun peserta tryout umum, sekaligus memudahkan tim pengajar dan admin mengolah bank soal serta rekap hasil ujian.
+
+<Callout title="INTI MASALAH">
+  Pelaksanaan tryout online menuntut mekanisme anti-kehilangan jawaban saat koneksi atau tab
+  terganggu, isolasi antara sesi siswa terdaftar dan peserta simulasi umum, serta analitik cepat
+  untuk mengidentifikasi butir soal tersulit.
+</Callout>
+
+## Solusi & Fitur Utama
+
+Sistem dibangun dalam satu aplikasi web monolitik Laravel yang mencakup landing page CMS publik, portal ujian siswa, simulasi ujian terbuka tanpa login akun, hingga dashboard analitik admin.
+
+<BentoGrid
+  items={[
+    {
+      title: "Portal Ujian & Auto-Save",
+      desc: "Mendukung 4 tipe soal (PG tunggal/kompleks dan Benar-Salah tunggal/kompleks), token ujian 6 karakter, pengacakan soal, auto-save 30 detik, dan sendBeacon saat pindah atau menutup tab.",
+    },
+    {
+      title: "Simulasi Umum & CMS Publik",
+      desc: "Peserta umum cukup mengisi data diri singkat untuk mencoba simulasi CBT, berdampingan dengan CMS publik berita, pengajar, galeri, testimoni, sitemap, dan JSON-LD SEO.",
+    },
+    {
+      title: "Bank Soal & Analisis Soal Tersulit",
+      desc: "Editor soal berbasis TinyMCE upload gambar, manajemen token, import siswa & export Excel via queue worker Redis, live search AJAX tanpa reload, serta tab rekap urutan soal tersulit.",
+    },
+  ]}
+/>
+
+![Daftar Simulasi Ujian CBT Republik Bimbel](/images/republik-bimbel-ujian.png)
+
+## Peran & Tech Stack
+
+Saya mengerjakan pengembangan sistem full-stack, perancangan alur ujian CBT dan panel admin, optimasi query caching menggunakan Redis tag, hingga penyiapan deployment container Docker untuk produksi:
+
+- **Backend & Core (`Laravel 12`)**: Dibangun dengan Laravel 12 dan PHP 8.2/8.4 menggunakan arsitektur MVC, database MySQL 8.0, Redis 7 untuk `Cache::tags` dan background queue worker import/export, serta `maatwebsite/excel` untuk laporan hasil nilai dan analisis soal tersulit.
+- **Frontend & UI (`Blade`)**: Memakai Laravel Blade, Bootstrap 5, Vite + Tailwind CSS v4, jQuery dengan engine AJAX live table kustom (`DOMParser`) untuk pencarian/filter tanpa reload, TinyMCE, ApexCharts, Fancybox, dan SweetAlert.
+- **Infrastruktur & Deployment**: Berjalan di atas Docker Compose dengan container terpisah untuk `Nginx`, `PHP-FPM`, `Redis Queue Worker`, `MySQL 8.0`, dan `Redis 7 Alpine`.
+
+<StackChips
+  items={[
+    "Laravel",
+    "PHP",
+    "Blade",
+    "Bootstrap 5",
+    "Tailwind CSS",
+    "Vite",
+    "MySQL",
+    "Redis",
+    "Docker",
+    "Nginx",
+  ]}
+/>

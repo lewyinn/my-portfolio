@@ -1,13 +1,25 @@
 import Link from "next/link";
 import type { Post } from "@/lib/content";
 import { formatDate } from "@/lib/content-utils";
-import type { Dictionary } from "@/lib/dictionaries/en";
-import { localeLabels, localePath, type Locale } from "@/lib/i18n";
+import type { Dictionary } from "@/lib/dictionary";
+import { site } from "@/lib/site";
 import { cardClass, sheenClass } from "./card";
+import { EditorialCover } from "./editorial-cover";
 import { ArrowUpRightIcon } from "./icons";
-import { Media } from "./media";
 
-export type PostCardData = Pick<Post, "slug" | "title" | "date" | "tags" | "readingTime" | "cover">;
+export type PostCardData = Pick<
+  Post,
+  | "slug"
+  | "title"
+  | "description"
+  | "date"
+  | "tags"
+  | "category"
+  | "accent"
+  | "coverVariant"
+  | "readingTime"
+  | "cover"
+>;
 
 export type PostCardLabels = Dictionary["postCard"] & { minRead: string };
 
@@ -16,36 +28,42 @@ export function postCardLabels(t: Dictionary): PostCardLabels {
   return { ...t.postCard, minRead: t.common.minRead };
 }
 
-type PostCardProps = { post: PostCardData; locale: Locale; labels: PostCardLabels };
+type PostCardProps = {
+  post: PostCardData;
+  labels: PostCardLabels;
+  index?: number;
+};
 
-export function PostCard({ post, locale, labels }: PostCardProps) {
+export function PostCard({ post, labels, index }: PostCardProps) {
+  const indexLabel = typeof index === "number" ? String(index + 1).padStart(2, "0") : undefined;
+
   return (
     <Link
-      href={localePath(locale, `/blog/${post.slug}`)}
+      href={`/blog/${post.slug}`}
       className={`${cardClass} flex h-full flex-col hover:-translate-y-1`}
     >
-      <div className="relative aspect-[16/10] overflow-hidden border-b border-white/[0.08]">
-        <Media
-          src={post.cover}
-          alt={`${labels.coverAlt} ${post.title}`}
-          label={labels.coverLabel}
-          className="absolute inset-0 transition-[scale] duration-700 ease-out group-hover:scale-[1.04]"
+      <div className="relative aspect-[16/9] overflow-hidden border-b border-white/[0.08]">
+        <EditorialCover
+          slug={post.slug}
+          category={post.category}
+          indexLabel={indexLabel}
+          variant={post.coverVariant}
+          accent={post.accent}
+          tags={post.tags}
         />
-        {post.tags[0] ? (
-          <span className="absolute top-3.5 left-3.5 rounded-full border border-white/15 bg-ink/85 px-3 py-1 text-[10px] font-semibold tracking-[0.2em] uppercase">
-            {post.tags[0]}
-          </span>
-        ) : null}
       </div>
       <div className="relative flex flex-1 flex-col gap-3 p-6">
         <div className={sheenClass} />
-        <span className="relative text-[11px] tracking-[0.2em] text-muted uppercase">
-          {formatDate(post.date, localeLabels[locale].date)} · {post.readingTime} {labels.minRead}
+        <span className="relative font-mono text-[11px] tracking-[0.14em] text-muted uppercase">
+          {formatDate(post.date, site.dateLocale)} · {post.readingTime} {labels.minRead}
         </span>
         <h3 className="relative text-xl leading-snug font-semibold transition-colors duration-300 group-hover:text-white">
           {post.title}
         </h3>
-        <span className="relative mt-auto inline-flex items-center gap-2 text-[11px] font-bold tracking-[0.2em] text-muted transition-colors duration-300 group-hover:text-fg">
+        <p className="relative line-clamp-2 text-sm leading-relaxed text-muted">
+          {post.description}
+        </p>
+        <span className="relative mt-auto inline-flex items-center gap-2 pt-2 text-[11px] font-bold tracking-[0.2em] text-muted transition-colors duration-300 group-hover:text-fg">
           {labels.read}
           <ArrowUpRightIcon
             strokeWidth={2.2}
@@ -60,10 +78,25 @@ export function PostCard({ post, locale, labels }: PostCardProps) {
 export function toPostCard({
   slug,
   title,
+  description,
   date,
   tags,
+  category,
+  accent,
+  coverVariant,
   readingTime,
   cover,
 }: PostCardData): PostCardData {
-  return { slug, title, date, tags, readingTime, cover };
+  return {
+    slug,
+    title,
+    description,
+    date,
+    tags,
+    category,
+    accent,
+    coverVariant,
+    readingTime,
+    cover,
+  };
 }

@@ -1,25 +1,21 @@
 /**
- * Site-wide settings. Empty contact fields render as visible placeholders
- * until the owner fills them in (see PLAN.md §10).
+ * Site-wide settings and verified contact links.
  */
 export const site = {
   name: "Ridho",
   fullName: "Moch. Ridho Kurniawan",
-  role: "Software Developer",
+  role: "Software Engineer",
+  dateLocale: "id-ID",
   url: (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, ""),
-  location: "Indonesia",
-  /** e.g. "hello@your-domain.com" */
-  email: "",
-  /** International format, digits only, e.g. "6281234567890" */
+  location: "Bogor, Jawa Barat, Indonesia",
+  email: "ridhokur102@gmail.com",
   whatsapp: "",
-  /** Full profile URLs */
-  github: "",
-  linkedin: "",
-  /** Path to the CV in /public, e.g. "/cv.pdf" */
+  github: "https://github.com/lewyinn",
+  linkedin: "https://www.linkedin.com/in/moch-ridho-kurniawan/",
   cv: "",
 };
 
-/** Navbar links: locale-free paths; labels come from `nav` in the dictionary. */
+/** Navbar links; labels come from `nav` in `lib/dictionary.ts`. */
 export const nav = [
   { path: "/", key: "home" },
   { path: "/about", key: "about" },
@@ -29,8 +25,8 @@ export const nav = [
 
 export const contact = {
   emailHref: site.email ? `mailto:${site.email}` : "#contact",
-  emailLabel: site.email || "[you@email.com]",
-  whatsappHref: site.whatsapp ? `https://wa.me/${site.whatsapp}` : "#contact",
+  emailLabel: site.email || "ridhokur102@gmail.com",
+  whatsappHref: site.whatsapp ? `https://wa.me/${site.whatsapp}` : "",
   githubHref: site.github || "#",
   linkedinHref: site.linkedin || "#",
   cvHref: site.cv || "#",

@@ -6,11 +6,9 @@ import { PostCard, postCardLabels } from "@/components/ui/post-card";
 import { Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionLabel } from "@/components/ui/section-label";
 import { getPosts } from "@/lib/content";
-import { localePath } from "@/lib/i18n";
-import { getI18n } from "@/lib/i18n-server";
+import { t } from "@/lib/dictionary";
 
-export async function LatestWriting() {
-  const { locale, t } = await getI18n();
+export function LatestWriting() {
   const posts = getPosts().slice(0, 3);
 
   return (
@@ -23,15 +21,15 @@ export async function LatestWriting() {
             <SectionLabel>{t.writing.label}</SectionLabel>
             <SectionHeading lead={t.writing.lead} accent={t.writing.accent} />
           </div>
-          <ButtonLink href={localePath(locale, "/blog")} arrow className="self-start md:self-auto">
+          <ButtonLink href="/blog" arrow className="self-start md:self-auto">
             {t.common.allArticles}
           </ButtonLink>
         </div>
 
         <Stagger className="grid gap-4 md:grid-cols-3" stagger={0.1}>
-          {posts.map((post) => (
+          {posts.map((post, i) => (
             <StaggerItem key={post.slug} className="h-full">
-              <PostCard post={post} locale={locale} labels={postCardLabels(t)} />
+              <PostCard post={post} index={i} labels={postCardLabels(t)} />
             </StaggerItem>
           ))}
         </Stagger>

@@ -12,7 +12,7 @@ function Row({ items, id }: { items: string[]; id: string }) {
 }
 
 /** Endless horizontal text band. Pauses on hover and stops for reduced motion. */
-export function Marquee({ items, repeat = 16 }: { items: string[]; repeat?: number }) {
+export function Marquee({ items, repeat = 6 }: { items: string[]; repeat?: number }) {
   // The band scrolls by half its width, so each half must be wider than the widest
   // screen or an empty gap shows. `repeat` is the minimum number of entries per half.
   const copies = Math.ceil(repeat / items.length);

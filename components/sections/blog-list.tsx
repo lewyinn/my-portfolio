@@ -3,16 +3,14 @@
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { PostCard, type PostCardData, type PostCardLabels } from "@/components/ui/post-card";
-import type { Locale } from "@/lib/i18n";
 
 /** Blog index with tag filters. Filtering happens on the client so the page stays static. */
 type BlogListProps = {
   posts: PostCardData[];
-  locale: Locale;
   labels: PostCardLabels & { all: string; filter: string };
 };
 
-export function BlogList({ posts, locale, labels }: BlogListProps) {
+export function BlogList({ posts, labels }: BlogListProps) {
   const tags = Array.from(new Set(posts.flatMap((post) => post.tags))).sort();
   const [tag, setTag] = useState<string | null>(null);
   const visible = tag ? posts.filter((post) => post.tags.includes(tag)) : posts;
@@ -47,7 +45,7 @@ export function BlogList({ posts, locale, labels }: BlogListProps) {
 
       <motion.ul layout className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <AnimatePresence mode="popLayout" initial={false}>
-          {visible.map((post) => (
+          {visible.map((post, i) => (
             <motion.li
               key={post.slug}
               layout
@@ -56,7 +54,7 @@ export function BlogList({ posts, locale, labels }: BlogListProps) {
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             >
-              <PostCard post={post} locale={locale} labels={labels} />
+              <PostCard post={post} index={i} labels={labels} />
             </motion.li>
           ))}
         </AnimatePresence>

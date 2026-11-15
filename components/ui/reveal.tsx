@@ -1,16 +1,11 @@
-"use client";
-
-import { motion, type Variants } from "motion/react";
-import type { ReactNode } from "react";
-
-const ease = [0.22, 1, 0.36, 1] as const;
+import type { CSSProperties, ReactNode } from "react";
 
 /** Fades and lifts its children into place when they scroll into view. */
 export function Reveal({
   children,
   delay = 0,
-  y = 28,
-  className,
+  y = 24,
+  className = "",
 }: {
   children: ReactNode;
   delay?: number;
@@ -18,78 +13,54 @@ export function Reveal({
   className?: string;
 }) {
   return (
-    <motion.div
+    <div
+      data-reveal=""
       className={className}
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.8, ease, delay }}
+      style={
+        {
+          "--reveal-y": `${y}px`,
+          ...(delay ? { "--reveal-d": `${delay}s` } : {}),
+        } as CSSProperties
+      }
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
-const tags = {
-  div: motion.div,
-  ol: motion.ol,
-  ul: motion.ul,
-  li: motion.li,
-  dl: motion.dl,
-};
-
-type Tag = keyof typeof tags;
-
-const group: Variants = {
-  hidden: {},
-  show: (stagger: number) => ({ transition: { staggerChildren: stagger } }),
-};
-
-const item: Variants = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease } },
-};
+type Tag = "div" | "ol" | "ul" | "li" | "dl";
 
 /** Reveals each `StaggerItem` child one after another. */
 export function Stagger({
   children,
   stagger = 0.08,
-  as = "div",
-  className,
+  as: TagName = "div",
+  className = "",
 }: {
   children: ReactNode;
   stagger?: number;
   as?: Tag;
   className?: string;
 }) {
-  const Component = tags[as];
   return (
-    <Component
-      className={className}
-      variants={group}
-      custom={stagger}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: "-80px" }}
-    >
+    <TagName data-reveal-group="" data-stagger={stagger} className={className}>
       {children}
-    </Component>
+    </TagName>
   );
 }
 
 export function StaggerItem({
   children,
-  as = "div",
-  className,
+  as: TagName = "div",
+  className = "",
 }: {
   children: ReactNode;
   as?: Tag;
   className?: string;
 }) {
-  const Component = tags[as];
   return (
-    <Component className={className} variants={item}>
+    <TagName data-reveal-item="" className={className}>
       {children}
-    </Component>
+    </TagName>
   );
 }

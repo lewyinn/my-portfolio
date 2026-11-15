@@ -1,7 +1,6 @@
 "use client";
 
-import { useLenis } from "lenis/react";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useEffect, useState } from "react";
 
 export type SectionIndexItem = { id: string; label: string };
 
@@ -11,9 +10,9 @@ export type SectionIndexItem = { id: string; label: string };
  */
 export function SectionIndex({ items, label }: { items: SectionIndexItem[]; label: string }) {
   const [active, setActive] = useState(items[0]?.id);
-  const lenis = useLenis();
 
   useEffect(() => {
+    if (!window.matchMedia("(min-width: 1100px)").matches) return;
     // A section counts as active while it crosses the horizontal middle of the viewport.
     const observer = new IntersectionObserver(
       (entries) => {
@@ -30,12 +29,6 @@ export function SectionIndex({ items, label }: { items: SectionIndexItem[]; labe
     return () => observer.disconnect();
   }, [items]);
 
-  const goTo = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
-    if (!lenis) return;
-    event.preventDefault();
-    lenis.scrollTo(`#${id}`);
-  };
-
   return (
     <nav
       aria-label={label}
@@ -48,7 +41,6 @@ export function SectionIndex({ items, label }: { items: SectionIndexItem[]; labe
             <li key={id}>
               <a
                 href={`#${id}`}
-                onClick={(event) => goTo(event, id)}
                 aria-current={isActive ? "true" : undefined}
                 className="group flex min-h-11 items-center justify-end gap-2.5 py-1 pl-4"
               >

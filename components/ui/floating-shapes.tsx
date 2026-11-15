@@ -1,7 +1,4 @@
-"use client";
-
-import { motion } from "motion/react";
-import type { ComponentType } from "react";
+import type { CSSProperties, ComponentType } from "react";
 import { Capsule3D, Cube3D, Pyramid3D, Ring3D, Sphere3D, type ShapeProps } from "./shapes-3d";
 
 type Item = {
@@ -27,7 +24,7 @@ const items: Item[] = [
   {
     Shape: Sphere3D,
     id: "fs-sphere",
-    tone: "var(--color-deco-pink)",
+    tone: "var(--color-deco-teal)",
     className: "right-[8%] top-[16%] size-16",
     y: -20,
     rotate: 0,
@@ -54,7 +51,7 @@ const items: Item[] = [
   {
     Shape: Capsule3D,
     id: "fs-capsule",
-    tone: "var(--color-deco-pink)",
+    tone: "var(--color-deco-teal)",
     className: "left-[44%] top-[6%] size-14",
     y: -10,
     rotate: -8,
@@ -63,21 +60,26 @@ const items: Item[] = [
 ];
 
 /**
- * Colorful 3D-looking icons that drift slowly behind a section (desktop only). They
- * animate only `transform` (no blur, no glow), so they stay cheap while scrolling.
+ * Colorful 3D-looking icons that drift slowly behind a section (desktop only).
+ * Driven purely by GPU CSS keyframes (zero JS RAF overhead).
  */
 export function FloatingShapes() {
   return (
     <div aria-hidden="true" className="pointer-events-none absolute inset-0 hidden md:block">
       {items.map(({ Shape, id, tone, className, y, rotate, duration }) => (
-        <motion.div
+        <div
           key={id}
-          className={`absolute ${className}`}
-          animate={{ y: [0, y, 0], rotate: [0, rotate, 0] }}
-          transition={{ duration, repeat: Infinity, ease: "easeInOut" }}
+          style={
+            {
+              "--fy": `${y}px`,
+              "--fr": `${rotate}deg`,
+              animationDuration: `${duration}s`,
+            } as CSSProperties
+          }
+          className={`absolute animate-float-shape motion-reduce:animate-none ${className}`}
         >
           <Shape id={id} tone={tone} className="size-full" />
-        </motion.div>
+        </div>
       ))}
     </div>
   );

@@ -1,14 +1,13 @@
 import { SectionHeading } from "@/components/ui/animated-text";
 import { Container } from "@/components/ui/container";
 import { GlowOrb, SectionGlow } from "@/components/ui/glow";
+import { ArrowUpRightIcon } from "@/components/ui/icons";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionLabel } from "@/components/ui/section-label";
-import { getI18n } from "@/lib/i18n-server";
+import { t } from "@/lib/dictionary";
 import { contact } from "@/lib/site";
 
-export async function Contact() {
-  const { t } = await getI18n();
-
+export function Contact() {
   return (
     <section id="contact" className="relative overflow-hidden">
       <SectionGlow />
@@ -19,7 +18,7 @@ export async function Contact() {
 
       <Container className="flex flex-col gap-10 py-24 md:gap-14 md:py-36">
         <SectionLabel bracketed={false}>{t.contact.label}</SectionLabel>
-        <div className="flex flex-col items-center gap-8 text-center md:gap-11">
+        <div className="flex flex-col items-center gap-8 text-center md:gap-10">
           <SectionHeading
             lead={t.contact.lead}
             accent={t.contact.accent}
@@ -48,12 +47,30 @@ export async function Contact() {
               {contact.emailLabel}
             </a>
           </Reveal>
-          <Reveal delay={0.3}>
+          <Reveal
+            delay={0.3}
+            className="flex items-center gap-4 font-mono text-xs tracking-[0.18em] text-muted uppercase"
+          >
             <a
-              href={contact.whatsappHref}
-              className="inline-flex min-h-11 items-center text-xs tracking-[0.16em] text-muted uppercase transition-colors hover:text-fg"
+              href={contact.githubHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-1.5 transition-colors hover:text-fg"
             >
-              {t.contact.whatsapp}
+              GITHUB
+              <ArrowUpRightIcon className="size-3.5" />
+            </a>
+            <span aria-hidden="true" className="text-white/25">
+              ·
+            </span>
+            <a
+              href={contact.linkedinHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center gap-1.5 transition-colors hover:text-fg"
+            >
+              LINKEDIN
+              <ArrowUpRightIcon className="size-3.5" />
             </a>
           </Reveal>
         </div>

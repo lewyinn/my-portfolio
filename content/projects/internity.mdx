@@ -1,36 +1,89 @@
 ---
 title: "Internity"
-subtitle: "Internship Journal"
-summary: "A web app for logging and tracking internship activity journals."
-category: "Web app · Education"
-year: "[YEAR]"
+subtitle: "Platform Manajemen & Monitoring PKL (Web & Mobile)"
+summary: "Platform web dan aplikasi mobile untuk mengelola seluruh siklus PKL sekolah, mitra perusahaan, presensi geofence, jurnal harian, penilaian, hingga sertifikat dan tracer alumni."
+category: "Web & Mobile · Education"
+year: "2025 - Sekarang"
 order: 1
 featured: true
-tags: ["Web App", "Dashboard", "[Stack]"]
+status: "published"
+role: "Full-Stack Developer"
+projectType: "Web App & Mobile App"
+stack: ["Vue.js", "Flutter", "Laravel"]
+statusText: "Dalam Pengerjaan · 90%"
+tags: ["Web App", "Mobile App", "Vue.js", "Flutter", "Laravel"]
+cover: "/images/internity-dashboard.png"
+live: "https://internity.id"
+contributors:
+  - github: "lewyin"
+    name: "Ridho"
+    url: "https://github.com/lewyin"
+  - github: "Fruzh"
+    name: "Fauzan"
+    url: "https://github.com/Fruzh"
+  - github: "ershnir"
+    name: "Putri"
+    url: "https://github.com/ershnir"
 ---
 
-<Callout>Draft case study. Fill in each section with real details before launch.</Callout>
+## Tantangan Awal
 
-## The problem
+Pengelolaan Praktik Kerja Lapangan (PKL) di sekolah melibatkan banyak peran sekaligus: Superadmin platform, Admin Sekolah & Hubin, Admin Perusahaan mitra, Siswa peserta, hingga Orang Tua/Wali. Sebelum sistem terpadu hadir, penempatan siswa di perusahaan mitra, verifikasi kehadiran berbasis lokasi, pencatatan jurnal harian, evaluasi nilai industri, sampai penerbitan sertifikat dan tracer alumni masih terpisah di banyak dokumen serta grup chat.
 
-[Who used it, and what was slow or painful before Internity existed?]
+<Callout title="INTI MASALAH">
+  Sekolah, perusahaan mitra, siswa, dan orang tua membutuhkan satu ekosistem data PKL multi-tenant
+  yang sinkron secara real-time, baik lewat dashboard web untuk manajemen maupun aplikasi mobile
+  untuk aktivitas harian.
+</Callout>
 
-## The solution
+## Solusi & Fitur Utama
 
-[What you built and the key features.]
+Internity dibangun sebagai platform SaaS multi-sekolah (isolasi data per `school_id`) yang menyatukan seluruh alur PKL dari hulu ke hilir melalui web app dan aplikasi mobile yang terhubung ke satu API terpusat.
 
-## My role
+<BentoGrid
+  items={[
+    {
+      title: "Dashboard Sekolah, Mitra & Superadmin",
+      desc: "Statistik kehadiran real-time, tren presensi 7 hari terakhir, sebaran penempatan per jurusan, manajemen MoU perusahaan, hingga pengaturan lokasi dan geofence cabang.",
+    },
+    {
+      title: "Presensi Geofence, Jurnal & Ekspor",
+      desc: "Validasi kehadiran berbasis peta Leaflet + swafoto MediaPipe, rekap jurnal harian terfilter per pembimbing/kelas, serta ekspor rekap Excel, PDF, dan dokumentasi ZIP.",
+    },
+    {
+      title: "Penilaian, Sertifikat & Aplikasi Mobile",
+      desc: "Alur penilaian terpusat, penerbitan sertifikat otomatis, tracer alumni, dan aplikasi Flutter untuk siswa serta orang tua yang terhubung dengan notifikasi push real-time.",
+    },
+  ]}
+/>
 
-[Design, frontend, backend: what you personally did.]
+![Tampilan Rekap Jurnal Harian Internity](/images/internity-jurnal.png)
 
-## Stack
+## Peran & Tech Stack
 
-[List the technologies you used and why.]
+Seluruh modul utama sudah selesai dibangun dan saat ini berada pada tahap finalisasi progress 90%. Di proyek ini, arsitektur sistem dipecah menjadi tiga layer yang saling terintegrasi:
 
-## Results
+- **Web App (`Vue.js`)**: Antarmuka SPA menggunakan Vue 3, TypeScript, Vite, Tailwind CSS v4, shadcn-vue (Reka UI), Pinia, TanStack Query & Table, serta VeeValidate + Zod. Dilengkapi visualisasi grafik ECharts, peta lokasi geofence Leaflet, verifikasi liveness selfie MediaPipe, multi-bahasa `vue-i18n` (ID/EN), serta notifikasi real-time via Laravel Echo (Pusher WebSocket) dan Firebase FCM.
+- **Mobile App (`Flutter`)**: Aplikasi Android/iOS untuk siswa dan orang tua dalam melakukan presensi geofence + selfie, pengisian jurnal harian, pengajuan izin, pairing wali (_guardian monitoring_), hingga menerima notifikasi push langsung.
+- **Backend & Infrastruktur (`Laravel`)**: REST API berbasis Laravel 13 & PHP 8.3 yang berjalan di atas Laravel Octane + FrankenPHP dengan autentikasi Laravel Sanctum, PostgreSQL + PgBouncer, Redis, MinIO (object storage S3 untuk file lampiran dan media), `barryvdh/laravel-dompdf` & `PhpSpreadsheet` untuk generator dokumen, serta microservice Rust (`data-stream`) untuk pemrosesan ekspor PDF/ZIP berkecepatan tinggi di dalam container Docker.
 
-[Measurable outcomes, such as time saved or number of active users. Use real numbers only.]
-
-## What I learned
-
-[One or two lessons from the project.]
+<StackChips
+  items={[
+    "Vue.js",
+    "TypeScript",
+    "Vite",
+    "Tailwind CSS",
+    "Pinia",
+    "TanStack Query",
+    "Leaflet",
+    "ECharts",
+    "Flutter",
+    "Laravel",
+    "PostgreSQL",
+    "Redis",
+    "MinIO",
+    "Rust",
+    "Docker",
+    "Firebase FCM",
+  ]}
+/>

@@ -1,40 +1,62 @@
 ---
-title: "Next.js + MDX: Building an SEO-Friendly Blog"
-description: "How the blog on this site works: MDX files in the repo, validated at build time, and rendered as static pages with full SEO metadata."
+title: "Bikin Blog SEO-Friendly Pakai Next.js dan MDX"
+description: "Setup App Router, metadata dinamis, dan struktur konten MDX biar artikel cepat terindex Google."
+date: "2026-11-03"
+category: "NEXT.JS"
+accent: "blue"
+coverVariant: "seo-mdx"
+tags: ["Next.js", "MDX", "SEO"]
+---
+
+## Kenapa MDX, bukan CMS terpisah?
+
+Untuk website personal maupun blog dokumentasi teknis, menjalankan headless CMS eksternal sering kali membuat alur publish jadi lambat. Dengan menyimpan artikel langsung sebagai file MDX di dalam repository Git, penulisan teks, komponen interaktif React, dan riwayat revisi ikut tercatat rapi tanpa server tambahan.
+
+<Callout title="INTI SINGKAT">
+  Semakin ringkas jalur publish artikel tanpa database atau layanan luar, semakin cepat ide teknis
+  berubah menjadi halaman statis yang siap dirayapi Google.
+</Callout>
+
+## Alur Kerja Pipeline Konten
+
+Setiap artikel cukup berupa satu file `.mdx` dengan metadata frontmatter di bagian paling atas:
+
+```mdx title="content/blog/nextjs-mdx-seo-blog.mdx"
+---
+title: "Bikin Blog SEO-Friendly Pakai Next.js dan MDX"
+description: "Cara setup konten statis cepat dengan metadata dinamis."
 date: "2026-11-03"
 tags: ["Next.js", "MDX", "SEO"]
 ---
 
-<Callout>Draft outline. Replace each section with your own words before launch.</Callout>
-
-## Why MDX instead of a CMS
-
-[Explain your reasoning in two or three sentences: one author, content versioned in git, no extra service to run.]
-
-## How the pipeline works
-
-Every article is a single `.mdx` file with frontmatter at the top:
-
-```mdx title="content/blog/my-post.mdx"
----
-title: "My post"
-description: "120–160 characters for the meta description."
-date: "2026-11-10"
-tags: ["nextjs"]
----
-
-Write the article here.
+Mulai tulis isi artikel di sini...
 ```
 
-[Describe what happens at build time: Velite validates the frontmatter, compiles the MDX, and the page is rendered as static HTML.]
+Saat build berjalan, schema Velite memvalidasi seluruh frontmatter agar tidak ada tanggal atau deskripsi yang terlewat, mengompilasi MDX menjadi JSX, lalu Next.js App Router menghasilkan HTML statis beserta tag OpenGraph dan canonical URL.
 
-## SEO checklist for every post
+## Checklist SEO untuk Setiap Artikel
 
-- A unique title and meta description
-- One `h1`, with headings in order
-- Descriptive image `alt` text
-- Internal links to related projects and articles
+<ChecklistCard
+  items={[
+    {
+      title: "Title & meta description unik",
+      desc: "Panjang 120-160 karakter dan langsung menjawab intensi pencarian pembaca.",
+    },
+    {
+      title: "Struktur heading teratur",
+      desc: "Satu tag H1 utama di judul, diikuti H2 dan H3 berurutan tanpa loncat level.",
+    },
+    {
+      title: "Canonical URL & alt text",
+      desc: "Hindari duplikasi halaman dengan canonical resmi serta alt text gambar deskriptif.",
+    },
+    {
+      title: "Internal link yang relevan",
+      desc: "Hubungkan tiap artikel dengan studi kasus proyek maupun catatan lain yang sejalan.",
+    },
+  ]}
+/>
 
-## What I would add next
+## Rencana Pengembangan Selanjutnya
 
-[Your notes on next steps, for example tag pages or an RSS feed.]
+Tahap berikutnya adalah menambahkan halaman indeks per kategori, indikator reading progress yang halus saat scroll, serta RSS feed otomatis biar pembaca bisa mengikuti catatan terbaru kapan saja.

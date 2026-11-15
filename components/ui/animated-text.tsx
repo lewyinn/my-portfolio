@@ -1,6 +1,4 @@
-"use client";
-
-import { motion, type Variants } from "motion/react";
+import { Fragment, type CSSProperties } from "react";
 
 type Tone = "fg" | "muted" | "accent";
 export type Segment = { text: string; tone?: Tone };
@@ -9,11 +7,6 @@ const toneClass: Record<Tone, string> = {
   fg: "",
   muted: "text-muted",
   accent: "text-accent",
-};
-
-const word: Variants = {
-  hidden: { y: "105%" },
-  show: { y: "0%", transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
 };
 
 type AnimatedTextProps = {
@@ -26,38 +19,38 @@ type AnimatedTextProps = {
 /** Heading whose words slide up from a mask when scrolled into view. */
 export function AnimatedText({ lines, as: Tag = "h2", className = "" }: AnimatedTextProps) {
   const label = lines.map((line) => line.map((s) => s.text).join(" ")).join(" ");
+  let wordCounter = 0;
 
   return (
     <Tag className={className}>
       <span className="sr-only">{label}</span>
-      <motion.span
-        aria-hidden="true"
-        className="block"
-        initial="hidden"
-        whileInView="show"
-        viewport={{ once: true, margin: "-60px" }}
-        transition={{ staggerChildren: 0.06 }}
-      >
+      <span data-reveal-text="" aria-hidden="true" className="block">
         {lines.map((line, lineIndex) => {
           const words = line.flatMap((segment) =>
             segment.text.split(" ").map((text) => ({ text, tone: segment.tone ?? "fg" })),
           );
           return (
             <span key={lineIndex} className="block">
-              {words.map((w, i) => (
-                <span key={i}>
-                  <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
-                    <motion.span variants={word} className={`inline-block ${toneClass[w.tone]}`}>
-                      {w.text}
-                    </motion.span>
-                  </span>
-                  {i < words.length - 1 ? " " : null}
-                </span>
-              ))}
+              {words.map((w, i) => {
+                const delay = wordCounter++ * 0.05;
+                return (
+                  <Fragment key={i}>
+                    <span className="inline-block overflow-hidden pb-[0.08em] align-bottom">
+                      <span
+                        className={`reveal-word inline-block ${toneClass[w.tone]}`}
+                        style={delay ? ({ "--word-d": `${delay}s` } as CSSProperties) : undefined}
+                      >
+                        {w.text}
+                      </span>
+                    </span>
+                    {i < words.length - 1 ? " " : null}
+                  </Fragment>
+                );
+              })}
             </span>
           );
         })}
-      </motion.span>
+      </span>
     </Tag>
   );
 }

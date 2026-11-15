@@ -1,30 +1,30 @@
 import { SectionHeading } from "@/components/ui/animated-text";
 import { ButtonLink } from "@/components/ui/button-link";
 import { cardClass, sheenClass } from "@/components/ui/card";
+import { Chip } from "@/components/ui/chip";
 import { Container } from "@/components/ui/container";
 import { GlowOrb, SectionGlow } from "@/components/ui/glow";
+import { GitHubIcon, LinkedInIcon, TechBrandIcon } from "@/components/ui/icons";
 import { Media } from "@/components/ui/media";
 import { Reveal, Stagger, StaggerItem } from "@/components/ui/reveal";
 import { SectionLabel } from "@/components/ui/section-label";
 import { about, aboutPhoto } from "@/lib/about";
-import { getI18n } from "@/lib/i18n-server";
 import { stackGroups } from "@/lib/data";
-import { contact } from "@/lib/site";
-import { Process } from "./process";
+import { t } from "@/lib/dictionary";
+import { contact, site } from "@/lib/site";
 import { Services } from "./services";
 import { Stack } from "./stack";
 
 type AboutProps = {
   /** Use "h1" when the section is the main content of its own page (/about). */
   headingAs?: "h1" | "h2";
-  /** Show the services ("What I do") and process ("How I work") blocks. Off on /about. */
+  /** Show the services ("Focus & expertise") block. Off on /about. */
   showServices?: boolean;
 };
 
-/** About section. Profile copy comes from `lib/about.ts`, UI labels from the dictionary. */
-export async function About({ headingAs = "h2", showServices = true }: AboutProps) {
-  const { locale, t } = await getI18n();
-  const content = about[locale];
+/** About section. Profile copy comes from `lib/about.ts`, UI labels from `lib/dictionary.ts`. */
+export function About({ headingAs = "h2", showServices = true }: AboutProps) {
+  const content = about;
   const [lead, ...rest] = content.bio;
 
   return (
@@ -44,7 +44,7 @@ export async function About({ headingAs = "h2", showServices = true }: AboutProp
             </Reveal>
           </div>
 
-          <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-14">
+          <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:items-stretch md:gap-14">
             <Reveal className="relative self-start md:sticky md:top-28">
               <div className="relative rounded-[28px] border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.01] p-2">
                 <Media
@@ -63,7 +63,7 @@ export async function About({ headingAs = "h2", showServices = true }: AboutProp
               </div>
             </Reveal>
 
-            <div className="flex flex-col gap-10">
+            <div className="flex h-full flex-col justify-between gap-8">
               <Reveal className="flex flex-col gap-5">
                 {lead ? (
                   <p className="text-xl leading-relaxed text-fg md:text-2xl md:leading-relaxed">
@@ -77,26 +77,52 @@ export async function About({ headingAs = "h2", showServices = true }: AboutProp
                 ))}
               </Reveal>
 
-              <Stagger as="dl" className="grid grid-cols-2 gap-3" stagger={0.08}>
+              <Stagger as="ul" className="grid grid-cols-2 gap-3" stagger={0.08}>
                 {content.facts.map((fact) => (
-                  <StaggerItem key={fact.label} className={`${cardClass} p-4 md:p-5`}>
+                  <StaggerItem as="li" key={fact.label} className={`${cardClass} p-4 md:p-5`}>
                     <div className={sheenClass} />
-                    <dt className="relative text-[10px] tracking-[0.24em] text-muted uppercase">
+                    <span className="relative block font-mono text-[10px] tracking-[0.24em] text-muted uppercase">
                       {fact.label}
-                    </dt>
-                    <dd className="relative mt-2 font-display text-2xl leading-none md:text-3xl">
+                    </span>
+                    <span className="relative mt-2 block font-display text-2xl leading-none md:text-3xl">
                       {fact.value}
-                    </dd>
+                    </span>
                   </StaggerItem>
                 ))}
               </Stagger>
 
+              {content.stacks.length ? (
+                <Reveal className="flex flex-col gap-3">
+                  <p className="font-mono text-[10px] tracking-[0.24em] text-muted uppercase">
+                    {content.stacksLabel}
+                  </p>
+                  <ul className="flex flex-wrap gap-2">
+                    {content.stacks.map((item) => (
+                      <li key={item}>
+                        <Chip className="gap-1.5">
+                          <TechBrandIcon name={item} className="size-3.5 shrink-0" />
+                          <span>{item}</span>
+                        </Chip>
+                      </li>
+                    ))}
+                  </ul>
+                </Reveal>
+              ) : null}
+
               <Reveal className="flex flex-wrap gap-2.5">
-                <ButtonLink href={contact.cvHref} variant="solid">
-                  {t.about.downloadCv}
+                {site.cv ? (
+                  <ButtonLink href={contact.cvHref} variant="solid">
+                    {t.about.downloadCv}
+                  </ButtonLink>
+                ) : null}
+                <ButtonLink href={contact.githubHref} arrow>
+                  <GitHubIcon className="size-4 shrink-0" />
+                  GitHub
                 </ButtonLink>
-                <ButtonLink href={contact.githubHref}>GitHub</ButtonLink>
-                <ButtonLink href={contact.linkedinHref}>LinkedIn</ButtonLink>
+                <ButtonLink href={contact.linkedinHref} arrow>
+                  <LinkedInIcon className="size-4 shrink-0" />
+                  LinkedIn
+                </ButtonLink>
               </Reveal>
             </div>
           </div>
@@ -126,15 +152,29 @@ export async function About({ headingAs = "h2", showServices = true }: AboutProp
           ) : null}
         </div>
 
-        <Stack
-          t={t.stack}
-          groups={stackGroups.map((group) => ({ ...group, desc: t.stack.desc[group.key] }))}
-        />
+        <div className="defer-section flex flex-col gap-7">
+          <div className="flex flex-col gap-3">
+            <SectionLabel>{t.stack.label}</SectionLabel>
+            <SectionHeading
+              lead={t.stack.lead}
+              accent={t.stack.accent}
+              className="font-display text-[clamp(48px,5.6vw,80px)] leading-[0.9]"
+            />
+            <Reveal>
+              <p className="max-w-[520px] text-[15px] leading-relaxed text-muted">
+                {t.stack.intro}
+              </p>
+            </Reveal>
+          </div>
+          <Stack
+            t={t.stack}
+            groups={stackGroups.map((group) => ({ ...group, desc: t.stack.desc[group.key] }))}
+          />
+        </div>
         {showServices ? (
-          <>
+          <div className="defer-section">
             <Services />
-            <Process />
-          </>
+          </div>
         ) : null}
       </Container>
     </section>
