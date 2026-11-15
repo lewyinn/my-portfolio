@@ -182,13 +182,6 @@ html {
   scroll-padding-top: 88px;
 }
 
-/* Skip offscreen style/layout work until below-the-fold sections approach viewport */
-main > section:not(#top),
-.defer-section {
-  content-visibility: auto;
-  contain-intrinsic-size: auto 720px;
-}
-
 /* Lightweight scroll-reveal driven by a single global IntersectionObserver */
 [data-reveal] {
   opacity: 0;

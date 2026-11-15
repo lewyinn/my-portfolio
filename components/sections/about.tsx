@@ -152,7 +152,7 @@ export function About({ headingAs = "h2", showServices = true }: AboutProps) {
           ) : null}
         </div>
 
-        <div className="defer-section flex flex-col gap-7">
+        <div className="flex flex-col gap-7">
           <div className="flex flex-col gap-3">
             <SectionLabel>{t.stack.label}</SectionLabel>
             <SectionHeading
@@ -171,11 +171,7 @@ export function About({ headingAs = "h2", showServices = true }: AboutProps) {
             groups={stackGroups.map((group) => ({ ...group, desc: t.stack.desc[group.key] }))}
           />
         </div>
-        {showServices ? (
-          <div className="defer-section">
-            <Services />
-          </div>
-        ) : null}
+        {showServices ? <Services /> : null}
       </Container>
     </section>
   );

@@ -1,4 +1,5 @@
 import { GlowOrb } from "@/components/ui/glow";
+import { RevealScale } from "@/components/ui/reveal";
 import type { Dictionary } from "@/lib/dictionary";
 
 /** Big "LET'S CONNECT." band that settles into place when scrolled into view. */
@@ -13,12 +14,9 @@ export function LetsBuild({ t }: { t: Dictionary["letsBuild"] }) {
         strength={0.08}
         className="top-1/2 left-1/2 h-80 w-[820px] -translate-x-1/2 -translate-y-1/2"
       />
-      <p
-        data-reveal-scale=""
-        className="relative text-center font-display text-[clamp(80px,12vw,180px)] leading-[0.9]"
-      >
+      <RevealScale className="relative text-center font-display text-[clamp(80px,12vw,180px)] leading-[0.9]">
         {t.lead} <span className="text-accent">{t.accent}</span>
-      </p>
+      </RevealScale>
     </section>
   );
 }

@@ -53,13 +53,22 @@ const blueprintAccent = {
   },
 } as const;
 
-function FeaturedPreview({ project, t }: { project: Project; t: Dictionary["work"] }) {
+function FeaturedPreview({
+  project,
+  t,
+  priority = false,
+}: {
+  project: Project;
+  t: Dictionary["work"];
+  priority?: boolean;
+}) {
   if (project.cover || !project.showcase) {
     return (
       <Media
         src={project.cover}
         alt={`${project.title} ${t.screenshot}`}
         label={`${project.title} ${t.screenshot} · 1600×1000`}
+        priority={priority}
         className="absolute inset-0 transition-[scale] duration-700 ease-out group-hover:scale-[1.04]"
       />
     );
@@ -112,9 +121,9 @@ function FeaturedPreview({ project, t }: { project: Project; t: Dictionary["work
   );
 }
 
-type CardProps = { project: Project; t: Dictionary["work"] };
+type CardProps = { project: Project; t: Dictionary["work"]; priority?: boolean };
 
-function FeaturedCard({ project, t }: CardProps) {
+function FeaturedCard({ project, t, priority = false }: CardProps) {
   return (
     <Link
       href={`/projects/${project.slug}`}
@@ -122,7 +131,7 @@ function FeaturedCard({ project, t }: CardProps) {
     >
       <div className={sheenClass} />
       <div className="relative min-h-[280px] overflow-hidden border-b border-white/[0.08] md:min-h-[440px] md:border-r md:border-b-0">
-        <FeaturedPreview project={project} t={t} />
+        <FeaturedPreview project={project} t={t} priority={priority} />
         <span className="absolute top-4 left-4 flex items-center gap-2 rounded-full border border-white/15 bg-ink/85 px-3 py-1.5 font-mono text-[10px] font-semibold tracking-[0.2em]">
           <span className="size-1.5 rounded-full bg-accent" />
           {t.featured}
@@ -311,7 +320,7 @@ export function Work({ headingAs = "h2" }: WorkProps) {
 
         {featured ? (
           <Reveal>
-            <FeaturedCard project={featured} t={t} />
+            <FeaturedCard project={featured} t={t} priority={headingAs === "h1"} />
           </Reveal>
         ) : null}
 

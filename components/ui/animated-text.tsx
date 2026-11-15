@@ -1,4 +1,7 @@
-import { Fragment, type CSSProperties } from "react";
+"use client";
+
+import { Fragment, useRef, type CSSProperties } from "react";
+import { useReveal } from "./reveal";
 
 type Tone = "fg" | "muted" | "accent";
 export type Segment = { text: string; tone?: Tone };
@@ -18,13 +21,15 @@ type AnimatedTextProps = {
 
 /** Heading whose words slide up from a mask when scrolled into view. */
 export function AnimatedText({ lines, as: Tag = "h2", className = "" }: AnimatedTextProps) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const shown = useReveal(ref);
   const label = lines.map((line) => line.map((s) => s.text).join(" ")).join(" ");
   let wordCounter = 0;
 
   return (
     <Tag className={className}>
       <span className="sr-only">{label}</span>
-      <span data-reveal-text="" aria-hidden="true" className="block">
+      <span ref={ref} data-reveal-text={shown ? "in" : ""} aria-hidden="true" className="block">
         {lines.map((line, lineIndex) => {
           const words = line.flatMap((segment) =>
             segment.text.split(" ").map((text) => ({ text, tone: segment.tone ?? "fg" })),
